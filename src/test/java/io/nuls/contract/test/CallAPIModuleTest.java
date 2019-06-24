@@ -1,8 +1,8 @@
 package io.nuls.contract.test;
 
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
-import io.nuls.contract.model.RpcResult;
-import io.nuls.contract.utils.JSONUtils;
+import io.nuls.contract.facade.AccountInfo;
+import io.nuls.contract.facade.BalanceInfo;
 
 import java.net.URL;
 
@@ -26,7 +26,10 @@ public class CallAPIModuleTest {
     }
 
     public void testRPC()throws Throwable {
-        RpcResult result = memberClient.invoke("getAccount", new Object[] {2,"tNULSeBaMnrs6JKrCy6TQdzYJZkMZJDng7QAsD"}, RpcResult.class);
+        AccountInfo result = memberClient.invoke("getAccount", new Object[] {2,"tNULSeBaMnrs6JKrCy6TQdzYJZkMZJDng7QAsD"}, AccountInfo.class);
+
+        BalanceInfo result2 = memberClient.invoke("getAccountBalance", new Object[] {2,1,"tNULSeBaMnrs6JKrCy6TQdzYJZkMZJDng7QAsD"}, BalanceInfo.class);
         System.out.println(result.toString());
+        System.out.println(result2.toString());
     }
 }

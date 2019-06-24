@@ -25,7 +25,6 @@ public class RpcClientTest {
 
     public void testRPC()throws Throwable {
         String result = memberClient.invoke("test", new Object[] {test_memberId}, String.class);
-        System.out.println(memberClient.getHeaders().get("id"));
         System.out.println(result);
     }
 

@@ -1,8 +1,5 @@
 package io.nuls.contract.model;
 
-import io.nuls.contract.facade.AccountInfo;
-
-import java.io.Serializable;
 import java.util.Map;
 
 public class RpcResult{
