@@ -6,11 +6,11 @@ import java.util.Map;
 
 public interface ContractService {
 
-    public Map getContractConstructor(int chainId,String contractCode);
+    public String[] getContractConstructor(int chainId,String contractCode);
 
-    public Map validateContractCreate(int chainId,String sender,long gasLimit,long price,String contractCode,Object[] args);
+    public boolean validateContractCreate(int chainId,String sender,long gasLimit,long price,String contractCode,Object[] args);
 
-    public Map imputedContractCreateGas(int chainId,String sender,String contractCode,Object[] args);
+    public long imputedContractCreateGas(int chainId,String sender,String contractCode,Object[] args);
 
     public List<String> getContractMethodArgsTypes(int chainId,String contractAddress,String methodname);
 

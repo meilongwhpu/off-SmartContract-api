@@ -16,7 +16,7 @@ import java.util.List;
  * */
 public class Log {
 
-    public static final String BASIC_NAME = "common";
+    public static final String BASIC_NAME = "offSmartContract";
 
     public static NulsLogger BASIC_LOGGER = LoggerBuilder.getLogger(BASIC_NAME);
 

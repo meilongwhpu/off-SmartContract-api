@@ -1,6 +1,8 @@
 package io.nuls.contract.service.impl;
 
 import io.nuls.contract.service.ContractService;
+import io.nuls.core.log.Log;
+import io.nuls.core.model.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,42 +15,59 @@ import java.util.Map;
 @Service
 public class ContractServiceImpl implements ContractService {
 
-    private final Logger logger = LoggerFactory.getLogger(ContractServiceImpl.class);
-
     @Autowired
     private HttpClient httpClient;
 
     @Override
-    public Map getContractConstructor(int chainId, String contractCode) {
+    public String[] getContractConstructor(int chainId, String contractCode) {
+        String[] types=null;
         Map result=null;
         try{
             result= httpClient.getRpcHttpClient().invoke("getContractConstructor",new Object[]{chainId,contractCode}, Map.class);
+            if(result!=null){
+                Map constructor = (Map)result.get("constructor");
+                List<Map> args = (List<Map>) constructor.get("args");
+                int size = args.size();
+                String[] argTypes = new String[size];
+                int i = 0;
+                for(Map arg : args) {
+                    argTypes[i++] = arg.get("type").toString();
+                }
+                types=argTypes;
+            }
         }catch (Throwable e){
-            logger.error("call api-moudle: getContractConstructor error",e);
+            Log.error("call api-moudle: getContractConstructor error",e);
         }
-        return result;
+        return types;
     }
 
     @Override
-    public Map validateContractCreate(int chainId, String sender, long gasLimit, long price, String contractCode, Object[] args) {
-        Map result=null;
+    public boolean validateContractCreate(int chainId, String sender, long gasLimit, long price, String contractCode, Object[] args) {
+        boolean isSuccess=false;
         try{
+            Map result=null;
             result= httpClient.getRpcHttpClient().invoke("validateContractCreate",new Object[]{chainId,sender,gasLimit,price,contractCode}, Map.class);
+            String  successStr=(String) result.get("success");
+            if("true".equals(successStr)){
+                isSuccess=true;
+            }
         }catch (Throwable e){
-            logger.error("call api-moudle: validateContractCreate error",e);
+            Log.error("call api-moudle: validateContractCreate error",e);
         }
-        return result;
+        return isSuccess;
     }
 
     @Override
-    public Map imputedContractCreateGas(int chainId, String sender, String contractCode, Object[] args) {
-        Map result=null;
+    public long imputedContractCreateGas(int chainId, String sender, String contractCode, Object[] args) {
+        long gasLimit=0;
         try{
+            Map result=null;
             result= httpClient.getRpcHttpClient().invoke("imputedContractCreateGas",new Object[]{chainId,sender,contractCode,args}, Map.class);
+            gasLimit=(long)result.get("gasLimit");
         }catch (Throwable e){
-            logger.error("call api-moudle: imputedContractCreateGas error",e);
+            Log.error("call api-moudle: imputedContractCreateGas error",e);
         }
-        return result;
+        return gasLimit;
     }
 
     @Override
@@ -57,7 +76,7 @@ public class ContractServiceImpl implements ContractService {
         try{
             result= httpClient.getRpcHttpClient().invoke("getContractMethodArgsTypes",new Object[]{chainId,contractAddress,methodname}, List.class);
         }catch (Throwable e){
-            logger.error("call api-moudle: getContractMethodArgsTypes error",e);
+            Log.error("call api-moudle: getContractMethodArgsTypes error",e);
         }
         return result;
     }
@@ -68,7 +87,7 @@ public class ContractServiceImpl implements ContractService {
         try{
             result= httpClient.getRpcHttpClient().invoke("imputedContractCreateGas",new Object[]{chainId,sender,value,gasLimit,price,contractAddress,methodName,methodDesc,args}, Map.class);
         }catch (Throwable e){
-            logger.error("call api-moudle: imputedContractCreateGas error",e);
+            Log.error("call api-moudle: imputedContractCreateGas error",e);
         }
         return result;
     }
@@ -79,7 +98,7 @@ public class ContractServiceImpl implements ContractService {
         try{
             result= httpClient.getRpcHttpClient().invoke("imputedContractCallGas",new Object[]{chainId,sender,value,contractAddress,methodName,methodDesc,args}, Map.class);
         }catch (Throwable e){
-            logger.error("call api-moudle: imputedContractCallGas error",e);
+            Log.error("call api-moudle: imputedContractCallGas error",e);
         }
         return result;
     }
@@ -90,7 +109,7 @@ public class ContractServiceImpl implements ContractService {
         try{
             result= httpClient.getRpcHttpClient().invoke("validateContractDelete",new Object[]{chainId,sender,contractAddress}, Map.class);
         }catch (Throwable e){
-            logger.error("call api-moudle: validateContractDelete error",e);
+            Log.error("call api-moudle: validateContractDelete error",e);
         }
         return result;
     }

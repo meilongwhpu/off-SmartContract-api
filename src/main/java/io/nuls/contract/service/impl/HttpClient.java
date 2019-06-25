@@ -15,6 +15,8 @@ public class HttpClient {
 
     @Autowired
     public HttpClient(ApiModuleInfoConfig infoConfig){
+        System.out.println(System.getProperty("log.level"));
+        System.out.println(System.getProperty("log.path"));
         try{
             String accessPath=infoConfig.getApiModuleAddress();
             Log.info("api module service path: "+accessPath);

@@ -1,13 +1,15 @@
 package io.nuls.contract.model;
 
-import java.util.Map;
+import io.nuls.core.basic.Result;
 
-public class RpcResult{
+public class RpcResult<T> {
+
     private String jsonrpc = "2.0";
 
     private long id;
 
-    private Map result;
+    private T result;
+
     private RpcResultError error;
 
     public String getJsonrpc() {
@@ -26,11 +28,11 @@ public class RpcResult{
         this.id = id;
     }
 
-    public Map getResult() {
+    public T getResult() {
         return result;
     }
 
-    public RpcResult setResult(Map result) {
+    public RpcResult setResult(T result) {
         this.result = result;
         return this;
     }
@@ -44,7 +46,7 @@ public class RpcResult{
         return this;
     }
 
-    public static  RpcResult success(Map t) {
+    public static <T> RpcResult success(T t) {
         RpcResult rpcResult = new RpcResult();
         rpcResult.setResult(t);
         return rpcResult;
@@ -93,7 +95,7 @@ public class RpcResult{
         sb.append(",\"id\":")
                 .append(id);
         sb.append(",\"result\":")
-                .append('\"').append(result.toString()).append('\"');
+                .append('\"').append(result).append('\"');
         sb.append(",\"error\":")
                 .append(error);
         sb.append('}');

@@ -14,6 +14,12 @@ public enum RpcErrorCode {
     // 合约验证失败
     CONTRACT_VALIDATION_FAILED("102", "Contract verification failed."),
 
+    //参数为空
+    NULL_PARAMETER("103","contract parameter is null"),
+
+    INSUFFICIENT_BALANCE("200","sender is insufficient balance"),
+
+    CONTRACT_TX_CREATE_ERROR("202","create contract transaction error"),
     //数据未找到
     DATA_NOT_EXISTS("404", "Data not found!"),
 
