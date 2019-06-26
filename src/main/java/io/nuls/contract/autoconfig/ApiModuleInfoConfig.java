@@ -13,6 +13,9 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     @Value("${nuls.api.module.service.port}")
     private String apiModulePort;
 
+    @Value("${dataPath}")
+    private String dataPath;
+
     @Value("${log.path}")
     private String logPath;
 
@@ -76,6 +79,14 @@ public class ApiModuleInfoConfig  implements InitializingBean {
 
     public void setAssetId(String assetId) {
         this.assetId = assetId;
+    }
+
+    public String getDataPath() {
+        return dataPath;
+    }
+
+    public void setDataPath(String dataPath) {
+        this.dataPath = dataPath;
     }
 
     @Override

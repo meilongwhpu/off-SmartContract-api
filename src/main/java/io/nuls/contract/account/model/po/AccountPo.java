@@ -4,15 +4,21 @@ import io.nuls.base.basic.NulsByteBuffer;
 import io.nuls.base.basic.NulsOutputStreamBuffer;
 import io.nuls.base.data.Address;
 import io.nuls.base.data.BaseNulsData;
+import io.nuls.contract.account.constant.AccountErrorCode;
 import io.nuls.contract.account.model.bo.Account;
+import io.nuls.core.crypto.AESEncrypt;
 import io.nuls.core.crypto.ECKey;
 import io.nuls.core.crypto.EncryptedData;
+import io.nuls.core.exception.CryptoException;
 import io.nuls.core.exception.NulsException;
 import io.nuls.core.log.Log;
+import io.nuls.core.model.FormatValidUtils;
+import io.nuls.core.model.ObjectUtils;
 import io.nuls.core.parse.SerializeUtils;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Arrays;
 
 public class AccountPo extends BaseNulsData {
 
@@ -206,5 +212,63 @@ public class AccountPo extends BaseNulsData {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    /**
+     * 账户是否被加密(是否设置过密码)
+     * Whether the account is encrypted (Whether the password is set)
+     */
+    public boolean isEncrypted() {
+        return getEncryptedPriKey() != null && getEncryptedPriKey().length > 0;
+    }
+
+    /**
+     * 验证账户密码是否正确
+     * Verify that the account password is correct
+     */
+    public boolean validatePassword(String password) {
+        boolean result = FormatValidUtils.validPassword(password);
+        if (!result) {
+            return false;
+        }
+        byte[] unencryptedPrivateKey;
+        try {
+            unencryptedPrivateKey = AESEncrypt.decrypt(this.getEncryptedPriKey(), password);
+        } catch (CryptoException e) {
+            return false;
+        }
+        BigInteger newPriv = new BigInteger(1, unencryptedPrivateKey);
+        ECKey key = ECKey.fromPrivate(newPriv);
+
+        return Arrays.equals(key.getPubKey(), getPubKey());
+    }
+
+    /**
+     * 根据密码获取ECKey
+     */
+    public ECKey getEcKey(String password) throws NulsException {
+        ECKey eckey = null;
+        byte[] unencryptedPrivateKey;
+        //判断当前账户是否存在私钥，如果不存在私钥这为加密账户
+        BigInteger newPriv = null;
+        if (this.isEncrypted()) {
+            ObjectUtils.canNotEmpty(password, "the password can not be empty");
+            if (!validatePassword(password)) {
+                throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+            }
+            try {
+                unencryptedPrivateKey = AESEncrypt.decrypt(this.getEncryptedPriKey(), password);
+                newPriv = new BigInteger(1, unencryptedPrivateKey);
+            } catch (CryptoException e) {
+                throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+            }
+        } else {
+            newPriv = new BigInteger(1, this.getPriKey());
+        }
+        eckey = ECKey.fromPrivate(newPriv);
+        if (!Arrays.equals(eckey.getPubKey(), getPubKey())) {
+            throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+        }
+        return eckey;
     }
 }

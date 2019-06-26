@@ -12,10 +12,10 @@ public interface ContractResource {
 
     public String createContractForTest(@JsonRpcParam(value = "id") int id,@JsonRpcParam(value = "contractCode") String contractCode);
 
-    public RpcResult createContract(int chainId, int assetChainId, int assetId, String sender,String password, String contractCode, Object[] args, long gasLimit, long price,String remark);
+    public RpcResult createContract(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "assetChainId")int assetChainId, @JsonRpcParam(value = "assetId")int assetId, @JsonRpcParam(value = "sender")String sender,@JsonRpcParam(value = "password")String password, @JsonRpcParam(value = "contractCode")String contractCode, @JsonRpcParam(value = "args")Object[] args, @JsonRpcParam(value = "gasLimit")long gasLimit, @JsonRpcParam(value = "price")long price,@JsonRpcParam(value = "remark")String remark);
 
-    public String callContract(int chainId, int assetChainId, int assetId, String sender, String contractCode,BigInteger value,String methodName, String methodDesc,Object[] args, long gasLimit, long price);
+    public RpcResult callContract(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "assetChainId")int assetChainId, @JsonRpcParam(value = "assetId")int assetId, @JsonRpcParam(value = "sender")String sender,@JsonRpcParam(value = "password")String password, @JsonRpcParam(value = "contractAddress")String contractAddress,@JsonRpcParam(value = "value")BigInteger value,@JsonRpcParam(value = "methodName")String methodName, @JsonRpcParam(value = "methodDesc")String methodDesc,@JsonRpcParam(value = "args")Object[] args, @JsonRpcParam(value = "gasLimit")long gasLimit, @JsonRpcParam(value = "price")long price,@JsonRpcParam(value = "remark")String remark);
 
-    public String deleteContract(int chainId, int assetChainId, int assetId, String sender, String contractCode);
+    public RpcResult deleteContract(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "assetChainId")int assetChainId,@JsonRpcParam(value = "assetId")int assetId, @JsonRpcParam(value = "sender")String sender,@JsonRpcParam(value = "password")String password, @JsonRpcParam(value = "contractAddress")String contractAddress,@JsonRpcParam(value = "remark")String remark);
 
 }

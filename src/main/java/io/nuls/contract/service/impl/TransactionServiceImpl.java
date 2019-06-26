@@ -14,13 +14,20 @@ public class TransactionServiceImpl implements TransactionService {
     private HttpClient httpClient;
 
     @Override
-    public Map broadcastTx(int chainId, String txHex) {
-        Map result=null;
+    public boolean broadcastTx(int chainId, String txHex) {
+        boolean isSuccess=false;
         try{
+            Map result=null;
             result= httpClient.getRpcHttpClient().invoke("broadcastTx",new Object[]{chainId,txHex}, Map.class);
+            String  successStr=(String) result.get("success");
+            if("true".equals(successStr)){
+                isSuccess=true;
+            }
         }catch (Throwable e){
             Log.error("call api-moudle: broadcastTx error",e);
         }
-        return result;
+        return isSuccess;
     }
+
+
 }

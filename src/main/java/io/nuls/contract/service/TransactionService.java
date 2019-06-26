@@ -4,6 +4,6 @@ import java.util.Map;
 
 public interface TransactionService {
 
-    public Map broadcastTx(int chainId, String txHex);
+    public boolean broadcastTx(int chainId, String txHex);
 
 }

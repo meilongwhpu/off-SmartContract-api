@@ -28,4 +28,12 @@ public interface AccountStorageService {
      */
     boolean removeAccount(Address address);
 
+    /**
+     * 根据账户更新账户信息
+     * Update account information according to the account.
+     * @param account The account to be updated.
+     * @return the result of the opration
+     */
+    boolean updateAccount(AccountPo account);
+
 }

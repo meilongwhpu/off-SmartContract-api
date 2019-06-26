@@ -20,6 +20,21 @@ public enum RpcErrorCode {
     INSUFFICIENT_BALANCE("200","sender is insufficient balance"),
 
     CONTRACT_TX_CREATE_ERROR("202","create contract transaction error"),
+
+    SIGNATURE_ERROR("203","transaction data signature error"),
+
+    BROADCAST_TX_ERROR("204","broadcast transaction error"),
+
+    VALIADE_PW_ERROR("205","validation password error"),
+
+    VALIADE_CONTRACT_CALL_ERROR("206","validation contract call error"),
+
+    VALIADE_CONTRACT_DELETE_ERROR("207","validation contract delete error"),
+
+    CONTRACT_TX_CALL_ERROR("208","call contract transaction error"),
+
+    CONTRACT_TX_DELETE_ERROR("209","delete contract transaction error"),
+
     //数据未找到
     DATA_NOT_EXISTS("404", "Data not found!"),
 

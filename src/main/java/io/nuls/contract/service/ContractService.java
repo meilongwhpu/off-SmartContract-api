@@ -12,11 +12,11 @@ public interface ContractService {
 
     public long imputedContractCreateGas(int chainId,String sender,String contractCode,Object[] args);
 
-    public List<String> getContractMethodArgsTypes(int chainId,String contractAddress,String methodname);
+    public String[] getContractMethodArgsTypes(int chainId,String contractAddress,String methodname);
 
-    public Map validateContractCall(int chainId, String sender, BigInteger value,long gasLimit,long price,String contractAddress,String methodName,String methodDesc,Object[] args);
+    public boolean validateContractCall(int chainId, String sender, BigInteger value,long gasLimit,long price,String contractAddress,String methodName,String methodDesc,Object[] args);
 
     public Map imputedContractCallGas(int chainId ,String sender,BigInteger  value,String contractAddress,String methodName,String methodDesc,Object[] args);
 
-    public Map validateContractDelete(int chainId ,String sender,String contractAddress);
+    public boolean validateContractDelete(int chainId ,String sender,String contractAddress);
 }
