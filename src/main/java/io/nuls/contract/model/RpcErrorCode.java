@@ -35,15 +35,11 @@ public enum RpcErrorCode {
 
     CONTRACT_TX_DELETE_ERROR("209","delete contract transaction error"),
 
-    //数据未找到
-    DATA_NOT_EXISTS("404", "Data not found!"),
+    GET_CONTRACT_METHODARGS_EEROR("210","get contract method args error"),
 
-    //交易解析错误
-    TX_PARSE_ERROR("999", "Transaction parse error!"),
+    ACCOUNTKEYSTORE_FILE_DAMAGED("301","account keystore file damaged"),
 
-    //脚本执行错误
-    TX_SHELL_ERROR("755", "Shell execute error!"),
-
+    IMPORT_ACCOUNT_KEYSTORE_ERROR("302","import account by keyStore error"),
     //系统未知错误
     SYS_UNKNOWN_EXCEPTION("10002", "System unknown error!");
 

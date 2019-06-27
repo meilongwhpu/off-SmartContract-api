@@ -1,35 +1,34 @@
 package io.nuls.contract.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.nuls.core.basic.Result;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RpcResult<T> {
 
-    private String jsonrpc = "2.0";
-
-    private long id;
+    private boolean success;
 
     private T result;
 
     private RpcResultError error;
 
-    public String getJsonrpc() {
-        return jsonrpc;
+    public boolean isSuccess() {
+        return success;
     }
 
-    public void setJsonrpc(String jsonrpc) {
-        this.jsonrpc = jsonrpc;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 
     public T getResult() {
         return result;
+    }
+
+    public RpcResult(){
+
+    };
+    public RpcResult(boolean isSucess){
+        this.success=isSucess;
     }
 
     public RpcResult setResult(T result) {
@@ -47,41 +46,34 @@ public class RpcResult<T> {
     }
 
     public static <T> RpcResult success(T t) {
-        RpcResult rpcResult = new RpcResult();
+        RpcResult rpcResult = new RpcResult(true);
         rpcResult.setResult(t);
         return rpcResult;
     }
 
     public static RpcResult failed(RpcErrorCode errorCode) {
-        RpcResult rpcResult = new RpcResult();
+        RpcResult rpcResult = new RpcResult(false);
         RpcResultError error = new RpcResultError(errorCode);
         rpcResult.setError(error);
         return rpcResult;
     }
 
     public static RpcResult failed(Result result) {
-        RpcResult rpcResult = new RpcResult();
+        RpcResult rpcResult = new RpcResult(false);
         RpcResultError error = new RpcResultError(result.getErrorCode().getCode(), result.getMsg(), null);
         rpcResult.setError(error);
         return rpcResult;
     }
 
-    public static RpcResult dataNotFound() {
-        RpcResult rpcResult = new RpcResult();
-        RpcResultError error = new RpcResultError(RpcErrorCode.DATA_NOT_EXISTS.getCode(), RpcErrorCode.DATA_NOT_EXISTS.getMessage(), null);
-        rpcResult.setError(error);
-        return rpcResult;
-    }
-
     public static RpcResult paramError() {
-        RpcResult rpcResult = new RpcResult();
+        RpcResult rpcResult = new RpcResult(false);
         RpcResultError error = new RpcResultError(RpcErrorCode.PARAMS_ERROR.getCode(), RpcErrorCode.PARAMS_ERROR.getMessage(), null);
         rpcResult.setError(error);
         return rpcResult;
     }
 
     public static RpcResult paramError(String data) {
-        RpcResult rpcResult = new RpcResult();
+        RpcResult rpcResult = new RpcResult(false);
         RpcResultError error = new RpcResultError(RpcErrorCode.PARAMS_ERROR.getCode(), RpcErrorCode.PARAMS_ERROR.getMessage(), data);
         rpcResult.setError(error);
         return rpcResult;
@@ -90,10 +82,8 @@ public class RpcResult<T> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
-        sb.append("\"jsonrpc\":")
-                .append('\"').append(jsonrpc).append('\"');
-        sb.append(",\"id\":")
-                .append(id);
+        sb.append("\"success\":")
+                .append('\"').append(success).append('\"');
         sb.append(",\"result\":")
                 .append('\"').append(result).append('\"');
         sb.append(",\"error\":")

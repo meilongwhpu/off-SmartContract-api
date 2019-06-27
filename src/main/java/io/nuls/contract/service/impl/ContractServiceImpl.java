@@ -1,10 +1,8 @@
 package io.nuls.contract.service.impl;
 
+import com.googlecode.jsonrpc4j.JsonRpcClientException;
 import io.nuls.contract.service.ContractService;
 import io.nuls.core.log.Log;
-import io.nuls.core.model.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,46 +17,38 @@ public class ContractServiceImpl implements ContractService {
     private HttpClient httpClient;
 
     @Override
-    public String[] getContractConstructor(int chainId, String contractCode) {
+    public String[] getContractConstructor(int chainId, String contractCode)  throws JsonRpcClientException,Throwable {
         String[] types=null;
         Map result=null;
-        try{
-            result= httpClient.getRpcHttpClient().invoke("getContractConstructor",new Object[]{chainId,contractCode}, Map.class);
-            if(result!=null){
-                Map constructor = (Map)result.get("constructor");
-                List<Map> args = (List<Map>) constructor.get("args");
-                int size = args.size();
-                String[] argTypes = new String[size];
-                int i = 0;
-                for(Map arg : args) {
-                    argTypes[i++] = arg.get("type").toString();
-                }
-                types=argTypes;
+        result= httpClient.getRpcHttpClient().invoke("getContractConstructor",new Object[]{chainId,contractCode}, Map.class);
+        if(result!=null){
+            Map constructor = (Map)result.get("constructor");
+            List<Map> args = (List<Map>) constructor.get("args");
+            int size = args.size();
+            String[] argTypes = new String[size];
+            int i = 0;
+            for(Map arg : args) {
+                argTypes[i++] = arg.get("type").toString();
             }
-        }catch (Throwable e){
-            Log.error("call api-moudle: getContractConstructor error",e);
+            types=argTypes;
         }
         return types;
     }
 
     @Override
-    public boolean validateContractCreate(int chainId, String sender, long gasLimit, long price, String contractCode, Object[] args) {
+    public boolean validateContractCreate(int chainId, String sender, long gasLimit, long price, String contractCode, Object[] args)  throws JsonRpcClientException,Throwable{
         boolean isSuccess=false;
-        try{
-            Map result=null;
-            result= httpClient.getRpcHttpClient().invoke("validateContractCreate",new Object[]{chainId,sender,gasLimit,price,contractCode}, Map.class);
-            String  successStr=(String) result.get("success");
-            if("true".equals(successStr)){
-                isSuccess=true;
-            }
-        }catch (Throwable e){
-            Log.error("call api-moudle: validateContractCreate error",e);
+        Map result=null;
+        result= httpClient.getRpcHttpClient().invoke("validateContractCreate",new Object[]{chainId,sender,gasLimit,price,contractCode}, Map.class);
+        String  successStr=(String) result.get("success");
+        if("true".equals(successStr)){
+            isSuccess=true;
         }
         return isSuccess;
     }
 
     @Override
-    public long imputedContractCreateGas(int chainId, String sender, String contractCode, Object[] args) {
+    public long imputedContractCreateGas(int chainId, String sender, String contractCode, Object[] args)  throws JsonRpcClientException,Throwable{
         long gasLimit=0;
         try{
             Map result=null;
@@ -71,58 +61,42 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public String[] getContractMethodArgsTypes(int chainId, String contractAddress, String methodname) {
+    public String[] getContractMethodArgsTypes(int chainId, String contractAddress, String methodname) throws JsonRpcClientException,Throwable {
         String[] argsTypes=null;
-        try{
-            List<String> result=null;
-            result= httpClient.getRpcHttpClient().invoke("getContractMethodArgsTypes",new Object[]{chainId,contractAddress,methodname}, List.class);
-             argsTypes =new String[result.size()];
-            result.toArray(argsTypes);
-        }catch (Throwable e){
-            Log.error("call api-moudle: getContractMethodArgsTypes error",e);
-        }
+        List<String> result=null;
+        result= httpClient.getRpcHttpClient().invoke("getContractMethodArgsTypes",new Object[]{chainId,contractAddress,methodname}, List.class);
+        argsTypes =new String[result.size()];
+        result.toArray(argsTypes);
         return argsTypes;
     }
 
     @Override
-    public boolean validateContractCall(int chainId, String sender, BigInteger value, long gasLimit, long price, String contractAddress, String methodName, String methodDesc, Object[] args) {
+    public boolean validateContractCall(int chainId, String sender, BigInteger value, long gasLimit, long price, String contractAddress, String methodName, String methodDesc, Object[] args)  throws JsonRpcClientException,Throwable{
         boolean isSuccess=false;
-        try{
-            Map result=null;
-            result= httpClient.getRpcHttpClient().invoke("validateContractCall",new Object[]{chainId,sender,value,gasLimit,price,contractAddress,methodName,methodDesc,args}, Map.class);
-            String  successStr=(String) result.get("success");
-            if("true".equals(successStr)){
-                isSuccess=true;
-            }
-        }catch (Throwable e){
-            Log.error("call api-moudle: imputedContractCreateGas error",e);
+        Map result=null;
+        result= httpClient.getRpcHttpClient().invoke("validateContractCall",new Object[]{chainId,sender,value,gasLimit,price,contractAddress,methodName,methodDesc,args}, Map.class);
+        String  successStr=(String) result.get("success");
+        if("true".equals(successStr)){
+            isSuccess=true;
         }
         return isSuccess;
     }
 
     @Override
-    public Map imputedContractCallGas(int chainId, String sender, BigInteger value, String contractAddress, String methodName, String methodDesc, Object[] args) {
+    public Map imputedContractCallGas(int chainId, String sender, BigInteger value, String contractAddress, String methodName, String methodDesc, Object[] args)  throws JsonRpcClientException,Throwable{
         Map result=null;
-        try{
-            result= httpClient.getRpcHttpClient().invoke("imputedContractCallGas",new Object[]{chainId,sender,value,contractAddress,methodName,methodDesc,args}, Map.class);
-        }catch (Throwable e){
-            Log.error("call api-moudle: imputedContractCallGas error",e);
-        }
+        result= httpClient.getRpcHttpClient().invoke("imputedContractCallGas",new Object[]{chainId,sender,value,contractAddress,methodName,methodDesc,args}, Map.class);
         return result;
     }
 
     @Override
-    public boolean validateContractDelete(int chainId, String sender, String contractAddress) {
+    public boolean validateContractDelete(int chainId, String sender, String contractAddress) throws JsonRpcClientException,Throwable {
         boolean isSuccess=false;
-        try{
-            Map result=null;
-            result= httpClient.getRpcHttpClient().invoke("validateContractDelete",new Object[]{chainId,sender,contractAddress}, Map.class);
-            String  successStr=(String) result.get("success");
-            if("true".equals(successStr)){
-                isSuccess=true;
-            }
-        }catch (Throwable e){
-            Log.error("call api-moudle: validateContractDelete error",e);
+        Map result=null;
+        result= httpClient.getRpcHttpClient().invoke("validateContractDelete",new Object[]{chainId,sender,contractAddress}, Map.class);
+        String  successStr=(String) result.get("success");
+        if("true".equals(successStr)){
+            isSuccess=true;
         }
         return isSuccess;
     }

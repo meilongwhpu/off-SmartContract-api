@@ -24,11 +24,8 @@
  */
 package io.nuls.core.rockdb.util;
 
-import io.nuls.core.model.StringUtils;
 import io.nuls.core.log.Log;
-import io.nuls.core.parse.config.IniEntity;
-import org.ini4j.Config;
-import org.ini4j.Ini;
+import io.nuls.core.model.StringUtils;
 
 import java.io.File;
 import java.net.URL;
@@ -67,18 +64,6 @@ public class DBUtils {
             dir.mkdirs();
         }
         return dir;
-    }
-
-    private static String getProjectDbPath() throws Exception {
-        Config cfg = new Config();
-        cfg.setMultiSection(true);
-        Ini ini = new Ini();
-        ini.setConfig(cfg);
-        ini.load(new File("module.ncf"));  //可以读取到nuls_2.0项目根目录下的module.ncf,在生产环境读到jar同目录下的module.ncf
-        IniEntity ie = new IniEntity(ini);
-        String filePath = ie.getCfgValue("Module", "DataPath");
-        Log.info(filePath); //读取配置的data文件夹路径
-        return filePath;
     }
 
     public static String genAbsolutePath(String path) {

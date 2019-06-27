@@ -1,9 +1,9 @@
 package io.nuls.contract.service;
 
-import java.util.Map;
+import com.googlecode.jsonrpc4j.JsonRpcClientException;
 
 public interface TransactionService {
 
-    public boolean broadcastTx(int chainId, String txHex);
+    public boolean broadcastTx(int chainId, String txHex) throws JsonRpcClientException,Throwable;
 
 }

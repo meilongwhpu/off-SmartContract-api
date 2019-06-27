@@ -1,5 +1,6 @@
 package io.nuls.contract.account.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.nuls.base.data.Address;
 import io.nuls.contract.account.constant.AccountErrorCode;
 import io.nuls.core.crypto.AESEncrypt;

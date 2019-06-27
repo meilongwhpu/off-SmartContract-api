@@ -33,11 +33,17 @@ public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
 
     @Override
     public String backupAccountToKeyStore(String path, int chainId, String address, String password) {
-        //export account to keystore
-        AccountKeyStore accountKeyStore = this.accountToKeyStore(chainId, address, password);
-        //backup keystore files
-        String backupPath = this.backUpKeyStore(path, new AccountKeyStoreDto(accountKeyStore));
-        return backupPath;
+        try{
+            //export account to keystore
+            AccountKeyStore accountKeyStore = this.accountToKeyStore(chainId, address, password);
+            //backup keystore files
+            String backupPath = this.backUpKeyStore(path, new AccountKeyStoreDto(accountKeyStore));
+            return backupPath;
+        }catch (NulsRuntimeException e){
+            throw e;
+        }
+
+
 
     }
 
