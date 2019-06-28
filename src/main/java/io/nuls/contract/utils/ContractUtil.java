@@ -47,7 +47,7 @@ public class ContractUtil {
                         result[k] = valueOf(resultArg.get(k));
                     }
                     two[i] = result;
-                } else {
+                }  else {
                     two[i] = new String[]{valueOf(arg)};
                 }
             }

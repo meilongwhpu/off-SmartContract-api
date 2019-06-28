@@ -13,6 +13,8 @@ import io.nuls.contract.model.RpcResultError;
 import io.nuls.contract.rpc.resource.AccountResource;
 import io.nuls.contract.service.AccountService;
 import io.nuls.core.exception.NulsException;
+import io.nuls.core.exception.NulsRuntimeException;
+import io.nuls.core.log.Log;
 import io.nuls.core.parse.JSONUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ public class AccountResourceImpl implements AccountResource {
             Account account=accountService.createAccount(chainId,password);
             result.setResult(account.getAddress().toString());
         }catch (Exception e){
+            Log.error(e);
             RpcResultError error = new RpcResultError();
             error.setMessage(e.getMessage());
             result.setError(error);
@@ -77,9 +80,14 @@ public class AccountResourceImpl implements AccountResource {
             AccountKeyStoreDto accountKeyStoreDto = JSONUtils.json2pojo(new String(RPCUtil.decode(keyStore)), AccountKeyStoreDto.class);
             Account account=  accountService.importAccountByKeyStore(accountKeyStoreDto.toAccountKeyStore(), chainId, password, overwrite);
             result.setResult(account.getAddress().toString());
-        } catch (NulsException e){
+        } catch (NulsRuntimeException e){
+            Log.error(e);
+            return RpcResult.paramError(e.getMessage());
+        }catch (NulsException e){
+            Log.error(e);
             return RpcResult.failed(RpcErrorCode.IMPORT_ACCOUNT_KEYSTORE_ERROR);
         }catch (IOException e) {
+            Log.error(e);
             return RpcResult.failed(RpcErrorCode.ACCOUNTKEYSTORE_FILE_DAMAGED);
         }
         return result;

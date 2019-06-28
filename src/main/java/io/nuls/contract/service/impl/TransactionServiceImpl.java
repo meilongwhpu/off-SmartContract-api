@@ -14,11 +14,12 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public boolean broadcastTx(int chainId, String txHex)  throws JsonRpcClientException,Throwable {
         boolean isSuccess=false;
-        Map result=null;
-        result= httpClient.getRpcHttpClient().invoke("broadcastTx",new Object[]{chainId,txHex}, Map.class);
-        String  successStr=(String) result.get("success");
-        if("true".equals(successStr)){
+        Map result= httpClient.getRpcHttpClient().invoke("broadcastTx",new Object[]{chainId,txHex}, Map.class);
+        boolean  successStr=(boolean) result.get("value");
+        if(successStr){
             isSuccess=true;
+        }else{
+            throw  new Throwable(result.get("msg").toString());
         }
         return isSuccess;
     }

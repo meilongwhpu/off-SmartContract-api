@@ -11,7 +11,7 @@ public interface ContractService {
 
     public boolean validateContractCreate(int chainId,String sender,long gasLimit,long price,String contractCode,Object[] args) throws JsonRpcClientException,Throwable;
 
-    public long imputedContractCreateGas(int chainId,String sender,String contractCode,Object[] args) throws JsonRpcClientException,Throwable;
+    public int imputedContractCreateGas(int chainId,String sender,String contractCode,Object[] args) throws JsonRpcClientException,Throwable;
 
     public String[] getContractMethodArgsTypes(int chainId,String contractAddress,String methodname) throws JsonRpcClientException,Throwable;
 

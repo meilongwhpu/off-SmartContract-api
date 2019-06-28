@@ -98,34 +98,38 @@ public class ContractResourceImpl implements ContractResource {
         }
         byte[] contractCodeBytes = HexUtil.decode(contractCode);
         String[] argTypes=null;
-        String[][] convertArgs=null;
+
         boolean isSuccess=true;
         try{
             argTypes=contractService.getContractConstructor(chainId,contractCode);
             if (argTypes==null){
                 return RpcResult.paramError("get contract constructor wrong");
             }
-            convertArgs= ContractUtil.twoDimensionalArray(args, argTypes);
             isSuccess=contractService.validateContractCreate(chainId,sender,gasLimit,price,contractCode,args);
         }catch (JsonRpcClientException e){
+            Log.error(e);
             return RpcResult.paramError(e.getData().toString());
         }catch (Throwable e){
-            return RpcResult.failed(RpcErrorCode.CONTRACT_VALIDATION_FAILED);
+            Log.error(e);
+            return RpcResult.paramError(e.getMessage());
         }
 
         if(isSuccess){
             Address contract = AccountTool.createContractAddress(chainId);
             byte[] contractAddressBytes = contract.getAddressBytes();
+
+            String contractAddress=AddressTool.getStringAddressByBytes( contract.getAddressBytes());
             byte[] senderBytes = AddressTool.getAddress(sender);
 
             CreateContractTransaction tx = new CreateContractTransaction();
            try{
-               long gamLimit=contractService.imputedContractCreateGas(chainId,sender,contractCode,args);
+               int gamLimit=contractService.imputedContractCreateGas(chainId,sender,contractCode,args);
                  if (StringUtils.isNotBlank(remark)) {
                      tx.setRemark(remark.getBytes(StandardCharsets.UTF_8));
                  }
                  tx.setTime(System.currentTimeMillis()/ 1000);
 
+                 String[][] convertArgs= ContractUtil.twoDimensionalArray(args, argTypes);
                  //组装txData
                  CreateContractData createContractData= contractTxHelper.getCreateContractData(senderBytes,contractAddressBytes,BigInteger.ZERO,gamLimit,price,contractCodeBytes,convertArgs);
 
@@ -154,13 +158,15 @@ public class ContractResourceImpl implements ContractResource {
                String txData = RPCUtil.encode(tx.serialize());
                boolean result= transactionService.broadcastTx(chainId,txData);
                if(result){
-                   return RpcResult.success("create contract success");
+                   return RpcResult.success(contractAddress);
                }else {
                    return RpcResult.failed(RpcErrorCode.BROADCAST_TX_ERROR);
                }
              }catch (JsonRpcClientException e){
+               Log.error(e);
                return RpcResult.paramError(e.getData().toString());
            }catch (Throwable e){
+               Log.error(e);
                return RpcResult.failed(RpcErrorCode.CONTRACT_TX_CREATE_ERROR);
            }
         }else {
@@ -195,21 +201,20 @@ public class ContractResourceImpl implements ContractResource {
         try{
             argsTypes= contractService.getContractMethodArgsTypes(chainId, contractAddress, methodName);
         }catch (JsonRpcClientException e){
+            Log.error(e);
             return RpcResult.paramError(e.getData().toString());
         }catch (Throwable e){
             return RpcResult.failed(RpcErrorCode.GET_CONTRACT_METHODARGS_EEROR);
-        }
-
-        if (argsTypes==null){
-            return RpcResult.paramError("get contract constructor wrong");
         }
         String[][] convertArgs = ContractUtil.twoDimensionalArray(args, argsTypes);
         try{
             validate=contractService.validateContractCall(chainId,sender,value,gasLimit,price,contractAddress,methodName,methodDesc,args);
         }catch (JsonRpcClientException e){
+            Log.error(e);
             return RpcResult.paramError(e.getData().toString());
         }catch (Throwable e){
-            return RpcResult.failed(RpcErrorCode.VALIADE_CONTRACT_CALL_ERROR);
+            Log.error(e);
+            return RpcResult.paramError(e.getMessage());
         }
         if(!validate){
             return RpcResult.failed(RpcErrorCode.VALIADE_CONTRACT_CALL_ERROR);
@@ -250,14 +255,16 @@ public class ContractResourceImpl implements ContractResource {
             String txData = RPCUtil.encode(tx.serialize());
             boolean result= transactionService.broadcastTx(chainId,txData);
             if(result){
-                return RpcResult.success("call contract success");
+                return RpcResult.success(tx.getHash().toHex());
             }else {
                 return RpcResult.failed(RpcErrorCode.BROADCAST_TX_ERROR);
             }
         }catch (JsonRpcClientException e){
+            Log.error(e);
             return RpcResult.paramError(e.getData().toString());
         }catch (Throwable e) {
-            return RpcResult.failed(RpcErrorCode.CONTRACT_TX_CALL_ERROR);
+            Log.error(e);
+            return RpcResult.paramError(e.getMessage());
         }
     }
 
@@ -279,9 +286,11 @@ public class ContractResourceImpl implements ContractResource {
         try{
             validate =contractService.validateContractDelete(chainId, sender, contractAddress);
         }catch (JsonRpcClientException e){
+            Log.error(e);
             return RpcResult.paramError(e.getData().toString());
         }catch (Throwable e){
-            return RpcResult.failed(RpcErrorCode.VALIADE_CONTRACT_DELETE_ERROR);
+            Log.error(e);
+            return RpcResult.paramError(e.getMessage());
         }
 
         if(!validate){
@@ -326,9 +335,11 @@ public class ContractResourceImpl implements ContractResource {
                 return RpcResult.failed(RpcErrorCode.BROADCAST_TX_ERROR);
             }
         }catch (JsonRpcClientException e){
+            Log.error(e);
             return RpcResult.paramError(e.getData().toString());
         }catch (Throwable e) {
-            return RpcResult.failed(RpcErrorCode.CONTRACT_TX_DELETE_ERROR);
+            Log.error(e);
+            return RpcResult.paramError(e.getMessage());
         }
     }
 
