@@ -3,6 +3,7 @@ package io.nuls.contract.service.impl;
 import com.googlecode.jsonrpc4j.JsonRpcClient;
 import com.googlecode.jsonrpc4j.JsonRpcClientException;
 import io.nuls.base.basic.AddressTool;
+import io.nuls.base.data.Address;
 import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.base.signture.SignatureUtil;
 import io.nuls.contract.account.constant.AccountErrorCode;
@@ -59,7 +60,8 @@ public class AccountServiceImpl implements AccountService {
             }
             return account;
         } catch (NulsRuntimeException e){
-            throw e;
+            Log.error(e);
+            throw new NulsRuntimeException(e.getErrorCode());
         }catch (NulsException e) {
             Log.error(e);
             throw new NulsRuntimeException(e.getErrorCode());
@@ -112,7 +114,10 @@ public class AccountServiceImpl implements AccountService {
     public boolean validationPassword(int chainId, String address, String password) {
         byte[] addressBytes = AddressTool.getAddress(address);
         AccountPo accountPo=accountStorageService.getAccount(addressBytes);
-        boolean result =accountPo.validatePassword(password);
+        boolean result=false;
+        if(accountPo!=null){
+            result =accountPo.validatePassword(password);
+        }
         return result;
     }
 
@@ -176,5 +181,61 @@ public class AccountServiceImpl implements AccountService {
         return account;
     }
 
+    @Override
+    public Account importAccountByPrikey(int chainId, String prikey, String password, boolean overwrite) throws NulsException {
+        //check params
+        if (!ECKey.isValidPrivteHex(prikey)) {
+            throw new NulsRuntimeException(AccountErrorCode.PRIVATE_KEY_WRONG);
+        }
+        if (!FormatValidUtils.validPassword(password)) {
+            throw new NulsRuntimeException(AccountErrorCode.PASSWORD_IS_WRONG);
+        }
+        //not allowed to cover
+        if (!overwrite) {
+            Address address = AccountTool.newAddress(chainId, prikey);
+            //Query account already exists
+            Account account = this.getAccount(chainId, address.getBase58());
+            if (null != account) {
+                throw new NulsRuntimeException(AccountErrorCode.ACCOUNT_EXIST);
+            }
+        }
+        //create account by private key
+        Account account;
+        try {
+            account = AccountTool.createAccount(chainId, prikey);
+        } catch (NulsException e) {
+            throw new NulsRuntimeException(AccountErrorCode.PRIVATE_KEY_WRONG);
+        }
+        //encrypting account private key
+        account.encrypt(password);
+
+        //save account to storage
+        accountStorageService.saveAccount(new AccountPo(account));
+
+        //backup account to keystore
+        accountKeyStoreService.backupAccountToKeyStore(null, chainId, account.getAddress().getBase58(), password);
+
+        return account;
+    }
+
+    @Override
+    public String getPrivateKey(int chainId, String address, String password) {
+        //check whether the account exists
+        Account account = this.getAccount(chainId, address);
+        if (null == account) {
+            throw new NulsRuntimeException(AccountErrorCode.ACCOUNT_NOT_EXIST);
+        }
+        //加过密(有密码) 就验证密码 Already encrypted(Added password), verify password
+        if (account.isEncrypted()) {
+            try {
+                byte[] priKeyBytes = account.getPriKey(password);
+                return HexUtil.encode(priKeyBytes);
+            } catch (NulsException e) {
+                throw new NulsRuntimeException(AccountErrorCode.PASSWORD_IS_WRONG);
+            }
+        } else {
+            return null;
+        }
+    }
 
 }

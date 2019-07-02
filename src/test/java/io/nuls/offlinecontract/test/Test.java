@@ -1,4 +1,4 @@
-package io.nuls.contract.test;
+package io.nuls.offlinecontract.test;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JavaType;

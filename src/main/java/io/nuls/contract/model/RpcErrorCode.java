@@ -40,6 +40,8 @@ public enum RpcErrorCode {
     ACCOUNTKEYSTORE_FILE_DAMAGED("301","account keystore file damaged"),
 
     IMPORT_ACCOUNT_KEYSTORE_ERROR("302","import account by keyStore error"),
+
+    ACCOUNT_IS_NOT_EXIST("303","this account is not exist at local database"),
     //系统未知错误
     SYS_UNKNOWN_EXCEPTION("10002", "System unknown error!");
 

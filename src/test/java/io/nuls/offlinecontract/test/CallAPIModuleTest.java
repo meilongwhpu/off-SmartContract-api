@@ -1,9 +1,8 @@
-package io.nuls.contract.test;
+package io.nuls.offlinecontract.test;
 
 import com.googlecode.jsonrpc4j.JsonRpcClientException;
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
-import io.nuls.contract.facade.AccountInfo;
-import io.nuls.contract.facade.BalanceInfo;
+import io.nuls.contract.account.model.bo.AccountInfo;
 
 import java.net.URL;
 

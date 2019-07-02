@@ -1,4 +1,4 @@
-package io.nuls.contract.test;
+package io.nuls.offlinecontract.test;
 
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 import io.nuls.contract.model.RpcResult;
@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.URL;
 
+
 public class RpcContractClientTest {
     private static JsonRpcHttpClient memberClient;
     private int chainId=2;
@@ -21,7 +22,7 @@ public class RpcContractClientTest {
 
     private String contractAddress_nrc = "tNULSeBaNCHAhqG84z2kdeHx6AuFH6Zk6TmDDG";
 
-    private String contractAddress="tNULSeBaN83jeGNfkRHu5BZWXWZgyzQ6usR4iA";
+    private String contractAddress="tNULSeBaN118iFa633KZ1cjpLwmG9WsipQHgAR";
     private String password="nuls123456";
 
     private long gasLimit=100000;
@@ -37,7 +38,7 @@ public class RpcContractClientTest {
     public void createContract()throws Throwable {
         //int chainId,int assetId,String sender, String password,
         // String contractCode,Object[] args,long gasLimit, long price, String remark
-        String contractCode=getContractCode("D:\\BlockChain-nuls\\Pocm-contract-beta\\pocmContract-version-beta1\\target\\pocmContract-test2.jar");
+        String contractCode=getContractCode("D:\\BlockChain-nuls\\Pocm-contract-beta\\pocmContract-version-beta1\\target\\pocmContract-test2-old.jar");
         Object[] args = new Object[]{contractAddress_nrc,12000, 2, 0.5, 2, false, "tNULSeBaMtEPLXxUgyfnBt9bpb5Xv84dyJV98p", "", ""};
         RpcResult result=memberClient.invoke("createContract",new Object[]{chainId,assetId,sender,password,contractCode,args,gasLimit,price,remark},RpcResult.class);
         System.out.println(result);
@@ -67,6 +68,24 @@ public class RpcContractClientTest {
         System.out.println(result);
     }
 
+    @Test
+    public void callContract4()throws Throwable {
+        String contractCode=getContractCode("D:\\BlockChain-nuls\\Pocm-contract-beta\\pocmContract-version-beta1\\target\\pocmContract-test2-old.jar");
+        BigInteger value= BigInteger.ZERO;
+        Object[] args=new Object[]{};
+        RpcResult result=memberClient.invoke("getContractConstructor",new Object[]{chainId,contractCode},RpcResult.class);
+        System.out.println(result);
+    }
+
+    @Test
+    public void callContract3()throws Throwable {
+        // int chainId, String contractAddress, String methodName, String methodDesc, Object[] args
+        String methodName="totalDepositDetail";
+        BigInteger value= BigInteger.ZERO;
+        Object[] args=new Object[]{};
+        RpcResult result=memberClient.invoke("invokeContractViewMethod",new Object[]{chainId,contractAddress,methodName,"",args},RpcResult.class);
+        System.out.println(result);
+    }
 
     @Test
     public void deleteContract()throws Throwable {

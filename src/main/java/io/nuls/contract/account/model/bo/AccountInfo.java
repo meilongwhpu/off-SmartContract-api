@@ -1,31 +1,15 @@
 package io.nuls.contract.account.model.bo;
 
-import io.nuls.core.crypto.HexUtil;
+import java.math.BigInteger;
 
-import java.io.Serializable;
-
-public class AccountInfo  implements Serializable {
-    /**
-     * 账户地址
-     */
+public class AccountInfo {
     private String address;
 
-    /**
-     * 公钥Hex.encode(byte[])
-     */
-    private String pubkeyHex;
+    private BigInteger balance;
 
-    /**
-     * 已加密私钥Hex.encode(byte[])
-     */
-    private String encryptedPrikeyHex;
+    private BigInteger totalBalance;
 
-    public AccountInfo(Account account) {
-        this.address = account.getAddress().getBase58();
-        this.pubkeyHex = HexUtil.encode(account.getPubKey());
-        if (account.getEncryptedPriKey() != null) {
-            this.encryptedPrikeyHex = HexUtil.encode(account.getEncryptedPriKey());
-        }
+    public AccountInfo() {
     }
 
     public String getAddress() {
@@ -36,19 +20,20 @@ public class AccountInfo  implements Serializable {
         this.address = address;
     }
 
-    public String getPubkeyHex() {
-        return pubkeyHex;
+    public BigInteger getBalance() {
+        return balance;
     }
 
-    public void setPubkeyHex(String pubkeyHex) {
-        this.pubkeyHex = pubkeyHex;
+    public void setBalance(BigInteger balance) {
+        this.balance = balance;
     }
 
-    public String getEncryptedPrikeyHex() {
-        return encryptedPrikeyHex;
+    public BigInteger getTotalBalance() {
+        return totalBalance;
     }
 
-    public void setEncryptedPrikeyHex(String encryptedPrikeyHex) {
-        this.encryptedPrikeyHex = encryptedPrikeyHex;
+    public void setTotalBalance(BigInteger totalBalance) {
+        this.totalBalance = totalBalance;
     }
+
 }

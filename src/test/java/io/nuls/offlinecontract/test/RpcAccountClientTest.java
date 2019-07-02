@@ -1,4 +1,4 @@
-package io.nuls.contract.test;
+package io.nuls.offlinecontract.test;
 
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;

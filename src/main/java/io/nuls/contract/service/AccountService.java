@@ -47,4 +47,7 @@ public interface AccountService {
      */
     Account importAccountByKeyStore(AccountKeyStore keyStore, int chainId, String password, boolean overwrite) throws NulsException;
 
+    String getPrivateKey(int chainId, String address, String password) throws NulsException;
+
+    Account importAccountByPrikey(int chainId, String prikey, String password, boolean overwrite) throws NulsException;
 }

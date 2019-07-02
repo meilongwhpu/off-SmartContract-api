@@ -40,7 +40,8 @@ public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
             String backupPath = this.backUpKeyStore(path, new AccountKeyStoreDto(accountKeyStore));
             return backupPath;
         }catch (NulsRuntimeException e){
-            throw e;
+            Log.error(e);
+            throw new NulsRuntimeException(e.getErrorCode());
         }
 
 
