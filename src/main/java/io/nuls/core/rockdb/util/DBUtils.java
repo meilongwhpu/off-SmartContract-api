@@ -121,6 +121,30 @@ public class DBUtils {
         return areaName.matches(regex);
     }
     public static void main(String []args){
-        System.out.println(  DBUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        String path="D:\\BlockChain-nuls\\contract-api-master\\data3\\account";
+       String rootPath = "^[c-zC-Z]:.*";
+        if (path.matches(rootPath)) {
+            System.out.println(path);
+        } else {
+            System.out.println("-------"+genAbsolutePath(path));
+        }
+
+       File dir = new File(genAbsolutePath(path));
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        File[] tableFiles = dir.listFiles();
+        int i=0;
+        for (File tableFile : tableFiles) {
+
+            //缓存中已存在的数据库连接不再重复打开
+            if (!tableFile.isDirectory()) {
+                continue;
+            }
+            System.out.println("------"+i+"--------"+tableFile.getPath());
+            i++;
+        }
+        String dbPath = null;
+     //   System.out.println(  DBUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath());
     }
 }

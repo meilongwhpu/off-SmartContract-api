@@ -3,6 +3,8 @@ package io.nuls.contract.account.storage;
 import io.nuls.base.data.Address;
 import io.nuls.contract.account.model.po.AccountPo;
 
+import java.util.List;
+
 public interface AccountStorageService {
     /**
      * 创建账户
@@ -35,5 +37,12 @@ public interface AccountStorageService {
      * @return the result of the opration
      */
     boolean updateAccount(AccountPo account);
+
+
+    /**
+     * 获取所有账户
+     * @return the result of the opration and Result<List<Account>>
+     */
+    List<AccountPo> getAccountList();
 
 }

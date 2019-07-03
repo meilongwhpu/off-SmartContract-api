@@ -11,30 +11,22 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 
 @Component
-public class AccountConfig {
+public class AccountDataInitTool {
 
     /**
      * 导出keystore备份文件目录
      */
     public static String ACCOUNTKEYSTORE_FOLDER_NAME = "keystore/backup";
 
-
     @Autowired
-    public AccountConfig(ApiModuleInfoConfig infoConfig){
-        try{
-            initDB(infoConfig.getDataPath());
-        }catch (Exception e) {
-            Log.error("account database init error!");
-            throw new RuntimeException(e);
-        }
-    }
-
+    private ApiModuleInfoConfig infoConfig;
 
     /**
      * 初始化数据库
      * Initialization database
      */
-    private void initDB(String dataPath) throws Exception {
+    public void initDB() throws Exception {
+        String dataPath=infoConfig.getDataPath();
         //读取配置文件，数据存储根目录，初始化打开该目录下所有表连接并放入缓存
         RocksDBService.init(dataPath + File.separator + "account");
         //初始化表

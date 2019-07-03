@@ -13,6 +13,8 @@ public interface AccountResource {
 
     public RpcResult getAccount(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "assetId")int assetId,@JsonRpcParam(value = "address")String address);
 
+    public RpcResult getAccountList(@JsonRpcParam(value = "chainId")int chainId,@JsonRpcParam(value = "pageNumber")int pageNumber,@JsonRpcParam(value = "pageSize")int pageSize);
+
     public RpcResult exportAccountKeyStore(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "address")String address, @JsonRpcParam(value = "password")String password,@JsonRpcParam(value = "filePath")String filePath);
 
     public RpcResult importAccountByKeystore(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "password")String password,@JsonRpcParam(value = "keyStore")String keyStore,@JsonRpcParam(value = "overwrite")boolean overwrite);

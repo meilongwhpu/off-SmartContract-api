@@ -10,6 +10,9 @@ import io.nuls.core.log.Log;
 import io.nuls.core.rockdb.service.RocksDBService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class AccountStorageServiceImpl implements AccountStorageService {
     @Override
@@ -72,6 +75,27 @@ public class AccountStorageServiceImpl implements AccountStorageService {
             Log.error(e.getMessage());
             throw new NulsRuntimeException(AccountErrorCode.DB_UPDATE_ERROR);
         }
+    }
+
+
+    @Override
+    public List<AccountPo> getAccountList() {
+        List<AccountPo> accountPoList = new ArrayList<>();
+        try {
+            List<byte[]> list = RocksDBService.valueList(AccountConstant.DB_NAME_ACCOUNT);
+            if (list != null) {
+                for (byte[] value : list) {
+                    AccountPo accountPo = new AccountPo();
+                    //将byte数组反序列化为AccountPo返回
+                    accountPo.parse(value, 0);
+                    accountPoList.add(accountPo);
+                }
+            }
+        } catch (Exception e) {
+            Log.error(e.getMessage());
+            throw new NulsRuntimeException(AccountErrorCode.DB_QUERY_ERROR);
+        }
+        return accountPoList;
     }
 
 }

@@ -17,6 +17,7 @@ public class CreateContractData extends BaseNulsData implements ContractData {
     private byte[] sender;
     private byte[] contractAddress;
     private byte[] code;
+    private String alias;
     private long gasLimit;
     private long price;
     private byte argsCount;
@@ -132,6 +133,14 @@ public class CreateContractData extends BaseNulsData implements ContractData {
 
     public void setCode(byte[] code) {
         this.code = code;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     @Override

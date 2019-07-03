@@ -15,6 +15,7 @@ import io.nuls.contract.account.utils.AccountTool;
 import io.nuls.contract.model.BalanceInfo;
 import io.nuls.contract.service.AccountKeyStoreService;
 import io.nuls.contract.service.AccountService;
+import io.nuls.core.basic.Page;
 import io.nuls.core.crypto.AESEncrypt;
 import io.nuls.core.crypto.ECKey;
 import io.nuls.core.crypto.HexUtil;
@@ -28,6 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -71,7 +75,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account getAccount(int chainId, String address) {
+    public Account getAccount(int chainId, String address)  throws JsonRpcClientException{
         if (!AddressTool.validAddress(chainId, address)) {
             throw new NulsRuntimeException(AccountErrorCode.ADDRESS_ERROR);
         }
@@ -82,6 +86,23 @@ public class AccountServiceImpl implements AccountService {
             account=accountPo.toAccount();
         }
         return account;
+    }
+
+    @Override
+    public List<Account> getAccountList(int chainId)  throws JsonRpcClientException,Throwable{
+        List<Account> accountList = new ArrayList<>();
+        List<AccountPo> accountPoList=accountStorageService.getAccountList();
+        if (null == accountPoList || accountPoList.isEmpty()) {
+            return accountList;
+        }
+        for (AccountPo po : accountPoList) {
+            if(chainId==po.getChainId()){
+                Account account = po.toAccount();
+                accountList.add(account);
+            }
+        }
+        Collections.sort(accountList, (Account o1, Account o2) -> (o2.getCreateTime().compareTo(o1.getCreateTime())));
+        return accountList;
     }
 
 
@@ -182,7 +203,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account importAccountByPrikey(int chainId, String prikey, String password, boolean overwrite) throws NulsException {
+    public Account importAccountByPrikey(int chainId, String prikey, String password, boolean overwrite) throws NulsException ,JsonRpcClientException {
         //check params
         if (!ECKey.isValidPrivteHex(prikey)) {
             throw new NulsRuntimeException(AccountErrorCode.PRIVATE_KEY_WRONG);
@@ -219,7 +240,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String getPrivateKey(int chainId, String address, String password) {
+    public String getPrivateKey(int chainId, String address, String password)  throws JsonRpcClientException{
         //check whether the account exists
         Account account = this.getAccount(chainId, address);
         if (null == account) {

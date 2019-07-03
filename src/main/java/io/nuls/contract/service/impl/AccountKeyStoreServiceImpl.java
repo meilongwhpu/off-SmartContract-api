@@ -5,7 +5,8 @@ import io.nuls.contract.account.constant.AccountErrorCode;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountKeyStore;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
-import io.nuls.contract.autoconfig.AccountConfig;
+import io.nuls.contract.autoconfig.AccountDataInitTool;
+import io.nuls.contract.autoconfig.ApiModuleInfoConfig;
 import io.nuls.contract.constant.AccountConstant;
 import io.nuls.contract.service.AccountKeyStoreService;
 import io.nuls.contract.service.AccountService;
@@ -15,6 +16,7 @@ import io.nuls.core.log.Log;
 import io.nuls.core.model.StringUtils;
 import io.nuls.core.parse.JSONUtils;
 import io.nuls.core.rockdb.util.DBUtils;
+import org.checkerframework.checker.units.qual.Acceleration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +31,17 @@ import java.net.URLDecoder;
 public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
 
     @Autowired
+    private ApiModuleInfoConfig infoConfig;
+
+    @Autowired
     private AccountService accountService;
 
     @Override
     public String backupAccountToKeyStore(String path, int chainId, String address, String password) {
         try{
+            if(path==null){
+                path=infoConfig.getKeystorePath();
+            }
             //export account to keystore
             AccountKeyStore accountKeyStore = this.accountToKeyStore(chainId, address, password);
             //backup keystore files
@@ -92,11 +100,11 @@ public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
         //如果备份地址为空，则使用系统默认备份地址
         //if the backup address is empty, the default backup address of the system is used
         if (StringUtils.isBlank(path)) {
-            if (StringUtils.isBlank(AccountConfig.ACCOUNTKEYSTORE_FOLDER_NAME)) {
+            if (StringUtils.isBlank(AccountDataInitTool.ACCOUNTKEYSTORE_FOLDER_NAME)) {
                 URL resource = ClassLoader.getSystemClassLoader().getResource("");
                 path = resource.getPath();
             } else {
-                path = AccountConfig.ACCOUNTKEYSTORE_FOLDER_NAME;
+                path = AccountDataInitTool.ACCOUNTKEYSTORE_FOLDER_NAME;
             }
             try {
                 path = URLDecoder.decode(path, "UTF-8");

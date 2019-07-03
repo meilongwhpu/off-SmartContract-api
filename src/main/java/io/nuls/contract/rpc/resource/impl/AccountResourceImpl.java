@@ -15,6 +15,7 @@ import io.nuls.contract.model.RpcResultError;
 import io.nuls.contract.rpc.resource.AccountResource;
 import io.nuls.contract.service.AccountKeyStoreService;
 import io.nuls.contract.service.AccountService;
+import io.nuls.core.basic.Page;
 import io.nuls.core.exception.NulsException;
 import io.nuls.core.exception.NulsRuntimeException;
 import io.nuls.core.log.Log;
@@ -23,7 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -79,7 +82,14 @@ public class AccountResourceImpl implements AccountResource {
         if (!AddressTool.validAddress(chainId, address)) {
             return RpcResult.paramError("[address] is inValid");
         }
-        Account account=accountService.getAccount(chainId,address);
+        Account account= null;
+        try {
+            account = accountService.getAccount(chainId,address);
+        } catch (Throwable e) {
+            Log.error(e);
+            return RpcResult.paramError(e.getMessage());
+        }
+
         if(account!=null){
             try {
                 AccountInfo accountInfo= new AccountInfo();
@@ -99,6 +109,51 @@ public class AccountResourceImpl implements AccountResource {
             result.setSuccess(false);
         }
         return result;
+    }
+
+    @Override
+    public RpcResult getAccountList(int chainId, int pageNumber, int pageSize) {
+        Page<String> resultPage;
+        if (pageNumber < 1) {
+            return RpcResult.paramError("[pageNumber] is error");
+        }
+        if ( pageSize < 1) {
+            return RpcResult.paramError("[pageSize] is error");
+        }
+
+        List<Account> accountList= null;
+        try {
+            accountList = accountService.getAccountList(chainId);
+        } catch (Throwable e) {
+            Log.error(e);
+            return RpcResult.paramError(e.getMessage());
+        }
+        int totalSize=0;
+        if(accountList!=null){
+            totalSize=accountList.size();
+        }
+
+        //根据分页参数返回账户地址列表 Returns the account address list according to paging parameters
+        Page<String> page = new Page<String>(pageNumber, pageSize);
+        page.setTotal(totalSize);
+        int start = (pageNumber - 1) * pageSize;
+        if (start >= totalSize) {
+            return RpcResult.success(page);
+        }
+
+        int end = pageNumber * pageSize;
+        if (end > totalSize) {
+            end = totalSize;
+        }
+        accountList = accountList.subList(start, end);
+        resultPage = new Page<>(page);
+        List<String> addressList = new ArrayList<>();
+        for(Account account :accountList){
+            addressList.add(account.getAddress().getBase58());
+        }
+        resultPage.setList(addressList);
+
+        return RpcResult.success(resultPage);
     }
 
     @Override

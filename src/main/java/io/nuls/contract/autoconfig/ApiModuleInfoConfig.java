@@ -16,6 +16,9 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     @Value("${dataPath}")
     private String dataPath;
 
+    @Value("${keystorePath}")
+    private String keystorePath;
+
     @Value("${log.path}")
     private String logPath;
 
@@ -87,6 +90,14 @@ public class ApiModuleInfoConfig  implements InitializingBean {
 
     public void setDataPath(String dataPath) {
         this.dataPath = dataPath;
+    }
+
+    public String getKeystorePath() {
+        return keystorePath;
+    }
+
+    public void setKeystorePath(String keystorePath) {
+        this.keystorePath = keystorePath;
     }
 
     @Override

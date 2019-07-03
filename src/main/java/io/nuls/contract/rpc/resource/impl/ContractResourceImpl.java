@@ -29,6 +29,7 @@ import io.nuls.contract.service.TransactionService;
 import io.nuls.contract.utils.ContractUtil;
 import io.nuls.core.crypto.HexUtil;
 import io.nuls.core.log.Log;
+import io.nuls.core.model.FormatValidUtils;
 import io.nuls.core.model.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,7 @@ public class ContractResourceImpl implements ContractResource {
     private ContractTxHelper contractTxHelper;
 
     @Override
-    public RpcResult createContract(int chainId, int assetId, String sender,String password, String contractCode, Object[] args, long gasLimit, long price,String remark) {
+    public RpcResult createContract(int chainId, int assetId, String sender,String password, String contractCode,String alias, Object[] args, long gasLimit, long price,String remark) {
         if (gasLimit < 0 || price < 0) {
             return RpcResult.paramError("[price/gasLimit] is inValid");
         }
@@ -67,6 +68,10 @@ public class ContractResourceImpl implements ContractResource {
         if (StringUtils.isBlank(contractCode)) {
             return RpcResult.failed(RpcErrorCode.NULL_PARAMETER);
         }
+        if(FormatValidUtils.validAlias(alias)){
+            return RpcResult.paramError("[alias] is inValid");
+        }
+
         Account account=accountService.getAccount(chainId,sender);
         if(account==null){
             return RpcResult.failed(RpcErrorCode.ACCOUNT_IS_NOT_EXIST);
@@ -111,7 +116,7 @@ public class ContractResourceImpl implements ContractResource {
 
                  String[][] convertArgs= ContractUtil.twoDimensionalArray(args, argTypes);
                  //组装txData
-                 CreateContractData createContractData= contractTxHelper.getCreateContractData(senderBytes,contractAddressBytes,BigInteger.ZERO,gamLimit,price,contractCodeBytes,convertArgs);
+                 CreateContractData createContractData= contractTxHelper.getCreateContractData(senderBytes,contractAddressBytes,BigInteger.ZERO,gamLimit,price,contractCodeBytes,alias,convertArgs);
 
                  // 计算CoinData
                  BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetId,sender);

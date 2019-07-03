@@ -27,10 +27,11 @@ import static io.nuls.core.constant.CommonCodeConstanst.FAILED;
 @Component
 public class ContractTxHelper {
 
-    public CreateContractData getCreateContractData(byte[] senderBytes, byte[] contractAddressBytes, BigInteger value, long gasLimit, long price, byte[] contractCode, String[][] args) {
+    public CreateContractData getCreateContractData(byte[] senderBytes, byte[] contractAddressBytes, BigInteger value, long gasLimit, long price, byte[] contractCode,String alias, String[][] args) {
         CreateContractData createContractData = new CreateContractData();
         createContractData.setSender(senderBytes);
         createContractData.setContractAddress(contractAddressBytes);
+        createContractData.setAlias(alias);
         createContractData.setGasLimit(gasLimit);
         createContractData.setPrice(price);
         createContractData.setCode(contractCode);
