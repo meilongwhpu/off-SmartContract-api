@@ -1,6 +1,6 @@
 package io.nuls.contract.autoconfig;
 
-import io.nuls.contract.account.constant.AccountErrorCode;
+import io.nuls.contract.constant.AccountErrorCode;
 import io.nuls.contract.constant.AccountConstant;
 import io.nuls.core.exception.NulsException;
 import io.nuls.core.log.Log;

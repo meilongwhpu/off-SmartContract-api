@@ -3,6 +3,9 @@ package io.nuls.contract.account.model.bo;
 import java.math.BigInteger;
 
 public class AccountInfo {
+
+    private int chainId;
+
     private String address;
 
     private BigInteger balance;
@@ -12,6 +15,13 @@ public class AccountInfo {
     public AccountInfo() {
     }
 
+    public int getChainId() {
+        return chainId;
+    }
+
+    public void setChainId(int chainId) {
+        this.chainId = chainId;
+    }
     public String getAddress() {
         return address;
     }

@@ -8,23 +8,23 @@ import java.util.Map;
 
 public interface ContractService {
 
-    public String[] getContractConstructorArgsTypes(int chainId,String contractCode) throws JsonRpcClientException,Throwable;
+    public String[] getContractConstructorArgsTypes(int chainId,String contractCode) ;
 
-    public Map getContractConstructor(int chainId,String contractCode) throws JsonRpcClientException,Throwable;
+    public Map getContractConstructor(int chainId,String contractCode);
 
-    public boolean validateContractCreate(int chainId,String sender,long gasLimit,long price,String contractCode,Object[] args) throws JsonRpcClientException,Throwable;
+    public boolean validateContractCreate(int chainId,String sender,long gasLimit,long price,String contractCode,Object[] args) ;
 
-    public int imputedContractCreateGas(int chainId,String sender,String contractCode,Object[] args) throws JsonRpcClientException,Throwable;
+    public int imputedContractCreateGas(int chainId,String sender,String contractCode,Object[] args);
 
-    public String[] getContractMethodArgsTypes(int chainId,String contractAddress,String methodname) throws JsonRpcClientException,Throwable;
+    public String[] getContractMethodArgsTypes(int chainId,String contractAddress,String methodname);
 
-    public boolean validateContractCall(int chainId, String sender, BigInteger value,long gasLimit,long price,String contractAddress,String methodName,String methodDesc,Object[] args) throws JsonRpcClientException,Throwable;
+    public boolean validateContractCall(int chainId, String sender, BigInteger value,long gasLimit,long price,String contractAddress,String methodName,String methodDesc,Object[] args) ;
 
-    public int imputedContractCallGas(int chainId ,String sender,BigInteger  value,String contractAddress,String methodName,String methodDesc,Object[] args) throws JsonRpcClientException,Throwable;
+    public int imputedContractCallGas(int chainId ,String sender,BigInteger  value,String contractAddress,String methodName,String methodDesc,Object[] args);
 
-    public boolean validateContractDelete(int chainId ,String sender,String contractAddress) throws JsonRpcClientException,Throwable;
+    public boolean validateContractDelete(int chainId ,String sender,String contractAddress);
 
-    public String invokeView(int chainId, Object contractAddress, Object methodName, Object methodDesc, Object args)throws JsonRpcClientException,Throwable;
+    public String invokeView(int chainId, Object contractAddress, Object methodName, Object methodDesc, Object args);
 
-    public ContractInfo getContract(int chainId, String contractAddress)throws JsonRpcClientException, Throwable;
+    public ContractInfo getContract(int chainId, String contractAddress);
 }

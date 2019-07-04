@@ -1,5 +1,7 @@
 package io.nuls.contract.model;
 
+import io.nuls.core.constant.ErrorCode;
+
 public enum RpcErrorCode {
 
     // 参数不对
@@ -43,7 +45,30 @@ public enum RpcErrorCode {
 
     ACCOUNT_IS_NOT_EXIST("303","this account is not exist at local database"),
     //系统未知错误
-    SYS_UNKNOWN_EXCEPTION("10002", "System unknown error!");
+    SYS_UNKNOWN_EXCEPTION("10002", "System unknown error!"),
+
+
+    PASSWORD_IS_WRONG("ac_0000","Password is wrong"),
+    ACCOUNT_NOT_EXIST("ac_0001","Account does not exist"),
+    ACCOUNT_IS_ALREADY_ENCRYPTED("ac_0002","The account has been encrypted."),
+    ACCOUNT_EXIST("ac_0003","Account already exists"),
+    ADDRESS_ERROR("ac_0004","Address wrong"),
+    PRIVATE_KEY_WRONG("ac_0005","The private key is wrong"),
+    ACCOUNT_IS_ALREADY_ENCRYPTED_AND_LOCKED("ac_0006","Account is encrypted and locked"),
+
+    FAILED("err_0001","Failed"),
+    IO_ERROR("err_0006","IO error"),
+    PARAMETER_ERROR("err_0012","Parameter error"),
+    PARSE_JSON_FAILD("err_0017","Parse JSON failed"),
+    DESERIALIZE_ERROR("err_0020","File operation fialed"),
+    DB_TABLE_CREATE_ERROR("err_2011","Create DB area error"),
+    DB_SAVE_BATCH_ERROR("err_2012","data batch saving exceptions"),
+    DB_SAVE_ERROR("err_2013","data saving exceptions"),
+    DB_UPDATE_ERROR("err_2014","data update exceptions"),
+    DB_QUERY_ERROR("err_2015","data query exceptions"),
+
+    FILE_OPERATION_FAILD("err_0018","File operation fiald");
+
 
     private String code;
 

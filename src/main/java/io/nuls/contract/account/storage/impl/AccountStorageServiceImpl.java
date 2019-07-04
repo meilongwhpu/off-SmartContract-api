@@ -1,7 +1,7 @@
 package io.nuls.contract.account.storage.impl;
 
 import io.nuls.base.data.Address;
-import io.nuls.contract.account.constant.AccountErrorCode;
+import io.nuls.contract.constant.AccountErrorCode;
 import io.nuls.contract.account.model.po.AccountPo;
 import io.nuls.contract.account.storage.AccountStorageService;
 import io.nuls.contract.constant.AccountConstant;

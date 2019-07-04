@@ -13,11 +13,11 @@ public interface AccountService {
 
     public Account createAccount(int chainId,String password);
 
-    public Account getAccount(int chainId, String address) throws JsonRpcClientException;
+    public Account getAccount(int chainId, String address) ;
 
-    public List<Account> getAccountList(int chainId) throws JsonRpcClientException,Throwable;
+    public List<Account> getAccountList(int chainId);
 
-    public BalanceInfo getAccountBalance(int chainId, int assetId, String address) throws JsonRpcClientException,Throwable;
+    public BalanceInfo getAccountBalance(int chainId, int assetId, String address);
 
     /**
      * 数据摘要签名
@@ -30,7 +30,7 @@ public interface AccountService {
      * @return the signData byte[].
      * @throws NulsException nulsException
      */
-    P2PHKSignature signDigest(byte[] digest, int chainId, String address, String password) throws NulsException;
+    P2PHKSignature signDigest(byte[] digest, int chainId, String address, String password);
 
     boolean validationPassword(int chainId,String address, String password);
 
@@ -49,9 +49,9 @@ public interface AccountService {
      * @return the result of the operation.
      * @throws NulsException
      */
-    Account importAccountByKeyStore(AccountKeyStore keyStore, int chainId, String password, boolean overwrite) throws NulsException;
+    Account importAccountByKeyStore(AccountKeyStore keyStore, int chainId, String password, boolean overwrite);
 
-    String getPrivateKey(int chainId, String address, String password) throws  NulsException ,JsonRpcClientException;
+    String getPrivateKey(int chainId, String address, String password) ;
 
-    Account importAccountByPrikey(int chainId, String prikey, String password, boolean overwrite) throws NulsException ,JsonRpcClientException;
+    Account importAccountByPrikey(int chainId, String prikey, String password, boolean overwrite);
 }

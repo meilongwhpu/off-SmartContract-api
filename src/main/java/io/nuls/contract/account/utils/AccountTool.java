@@ -1,7 +1,7 @@
 package io.nuls.contract.account.utils;
 
 import io.nuls.base.data.Address;
-import io.nuls.contract.account.constant.AccountErrorCode;
+import io.nuls.contract.constant.AccountErrorCode;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.core.constant.BaseConstant;
 import io.nuls.core.crypto.ECKey;

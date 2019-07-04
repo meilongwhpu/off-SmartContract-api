@@ -72,6 +72,13 @@ public class RpcResult<T> {
         return rpcResult;
     }
 
+    public static RpcResult paramError(String code,String message) {
+        RpcResult rpcResult = new RpcResult(false);
+        RpcResultError error = new RpcResultError(RpcErrorCode.PARAMS_ERROR.getCode(), RpcErrorCode.PARAMS_ERROR.getMessage(), null);
+        rpcResult.setError(error);
+        return rpcResult;
+    }
+
     public static RpcResult paramError(String data) {
         RpcResult rpcResult = new RpcResult(false);
         RpcResultError error = new RpcResultError(RpcErrorCode.PARAMS_ERROR.getCode(), RpcErrorCode.PARAMS_ERROR.getMessage(), data);

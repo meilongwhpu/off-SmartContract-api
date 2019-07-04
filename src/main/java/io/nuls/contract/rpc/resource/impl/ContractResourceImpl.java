@@ -28,6 +28,7 @@ import io.nuls.contract.service.ContractService;
 import io.nuls.contract.service.TransactionService;
 import io.nuls.contract.utils.ContractUtil;
 import io.nuls.core.crypto.HexUtil;
+import io.nuls.core.exception.NulsRuntimeException;
 import io.nuls.core.log.Log;
 import io.nuls.core.model.FormatValidUtils;
 import io.nuls.core.model.StringUtils;
@@ -91,12 +92,9 @@ public class ContractResourceImpl implements ContractResource {
                 return RpcResult.paramError("get contract constructor wrong");
             }
             isSuccess=contractService.validateContractCreate(chainId,sender,gasLimit,price,contractCode,args);
-        }catch (JsonRpcClientException e){
+        }catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getData().toString());
-        }catch (Throwable e){
-            Log.error(e);
-            return RpcResult.paramError(e.getMessage());
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }
 
         if(isSuccess){
@@ -149,9 +147,9 @@ public class ContractResourceImpl implements ContractResource {
                }else {
                    return RpcResult.failed(RpcErrorCode.BROADCAST_TX_ERROR);
                }
-             }catch (JsonRpcClientException e){
+             }catch (NulsRuntimeException e) {
                Log.error(e);
-               return RpcResult.paramError(e.getData().toString());
+               return RpcResult.paramError(e.getCode(),e.getMessage());
            }catch (Throwable e){
                Log.error(e);
                return RpcResult.failed(RpcErrorCode.CONTRACT_TX_CREATE_ERROR);
@@ -170,9 +168,9 @@ public class ContractResourceImpl implements ContractResource {
             }else{
                 return RpcResult.paramError("get Contract Constructor info  form service error");
             }
-        } catch (Throwable e) {
+        } catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getMessage());
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }
     }
 
@@ -187,9 +185,9 @@ public class ContractResourceImpl implements ContractResource {
             }else {
                 return RpcResult.paramError("get Contract info form service  error");
             }
-        } catch (Throwable e) {
+        } catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getMessage());
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }
     }
 
@@ -219,21 +217,16 @@ public class ContractResourceImpl implements ContractResource {
         String[] argsTypes=null;
         try{
             argsTypes= contractService.getContractMethodArgsTypes(chainId, contractAddress, methodName);
-        }catch (JsonRpcClientException e){
+        }catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getData().toString());
-        }catch (Throwable e){
-            return RpcResult.failed(RpcErrorCode.GET_CONTRACT_METHODARGS_EEROR);
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }
         String[][] convertArgs = ContractUtil.twoDimensionalArray(args, argsTypes);
         try{
             validate=contractService.validateContractCall(chainId,sender,value,gasLimit,price,contractAddress,methodName,methodDesc,args);
-        }catch (JsonRpcClientException e){
+        }catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getData().toString());
-        }catch (Throwable e){
-            Log.error(e);
-            return RpcResult.paramError(e.getMessage());
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }
         if(!validate){
             return RpcResult.failed(RpcErrorCode.VALIADE_CONTRACT_CALL_ERROR);
@@ -280,9 +273,9 @@ public class ContractResourceImpl implements ContractResource {
             }else {
                 return RpcResult.failed(RpcErrorCode.BROADCAST_TX_ERROR);
             }
-        }catch (JsonRpcClientException e){
+        }catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getData().toString());
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }catch (Throwable e) {
             Log.error(e);
             return RpcResult.paramError(e.getMessage());
@@ -306,12 +299,9 @@ public class ContractResourceImpl implements ContractResource {
         }
         try{
             validate =contractService.validateContractDelete(chainId, sender, contractAddress);
-        }catch (JsonRpcClientException e){
+        }catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getData().toString());
-        }catch (Throwable e){
-            Log.error(e);
-            return RpcResult.paramError(e.getMessage());
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }
 
         if(!validate){
@@ -357,9 +347,9 @@ public class ContractResourceImpl implements ContractResource {
             }else {
                 return RpcResult.failed(RpcErrorCode.BROADCAST_TX_ERROR);
             }
-        }catch (JsonRpcClientException e){
+        }catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getData().toString());
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }catch (Throwable e) {
             Log.error(e);
             return RpcResult.paramError(e.getMessage());
@@ -379,9 +369,9 @@ public class ContractResourceImpl implements ContractResource {
             Map<String,String> map = new HashMap<String,String>();
             map.put("return",invokeResult);
             return RpcResult.success(map);
-        } catch (Throwable e) {
+        }catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getMessage());
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }
     }
 
@@ -393,11 +383,9 @@ public class ContractResourceImpl implements ContractResource {
         String[] argsTypes=null;
         try{
             argsTypes= contractService.getContractMethodArgsTypes(chainId, contractAddress, methodName);
-        }catch (JsonRpcClientException e){
+        }catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getData().toString());
-        }catch (Throwable e){
-            return RpcResult.failed(RpcErrorCode.GET_CONTRACT_METHODARGS_EEROR);
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }
         Map<String,String[]> map = new HashMap<String,String[]>();
         map.put("argsTypes",argsTypes);

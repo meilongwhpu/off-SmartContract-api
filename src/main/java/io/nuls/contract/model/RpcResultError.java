@@ -17,6 +17,11 @@ public class RpcResultError {
         this.data = data;
     }
 
+    public RpcResultError(String code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
     public RpcResultError(RpcErrorCode rpcErrorCode) {
         this.code = rpcErrorCode.getCode();
         this.message = rpcErrorCode.getMessage();

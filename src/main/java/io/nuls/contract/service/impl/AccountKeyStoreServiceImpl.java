@@ -1,13 +1,14 @@
 package io.nuls.contract.service.impl;
 
 import io.nuls.base.basic.AddressTool;
-import io.nuls.contract.account.constant.AccountErrorCode;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountKeyStore;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
 import io.nuls.contract.autoconfig.AccountDataInitTool;
 import io.nuls.contract.autoconfig.ApiModuleInfoConfig;
 import io.nuls.contract.constant.AccountConstant;
+import io.nuls.contract.constant.AccountErrorCode;
+import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.contract.service.AccountKeyStoreService;
 import io.nuls.contract.service.AccountService;
 import io.nuls.core.crypto.HexUtil;
@@ -16,7 +17,6 @@ import io.nuls.core.log.Log;
 import io.nuls.core.model.StringUtils;
 import io.nuls.core.parse.JSONUtils;
 import io.nuls.core.rockdb.util.DBUtils;
-import org.checkerframework.checker.units.qual.Acceleration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,20 +38,14 @@ public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
 
     @Override
     public String backupAccountToKeyStore(String path, int chainId, String address, String password) {
-        try{
-            if(path==null){
-                path=infoConfig.getKeystorePath();
-            }
-            //export account to keystore
-            AccountKeyStore accountKeyStore = this.accountToKeyStore(chainId, address, password);
-            //backup keystore files
-            String backupPath = this.backUpKeyStore(path, new AccountKeyStoreDto(accountKeyStore));
-            return backupPath;
-        }catch (NulsRuntimeException e){
-            Log.error(e);
-            throw new NulsRuntimeException(e.getErrorCode());
+        if(path==null){
+            path=infoConfig.getKeystorePath();
         }
-
+        //export account to keystore
+        AccountKeyStore accountKeyStore = this.accountToKeyStore(chainId, address, password);
+        //backup keystore files
+        String backupPath = this.backUpKeyStore(path, new AccountKeyStoreDto(accountKeyStore));
+        return backupPath;
 
 
     }
@@ -110,6 +104,7 @@ public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
                 path = URLDecoder.decode(path, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 Log.error(e);
+                throw new NulsRuntimeException(AccountErrorCode.DATA_PARSE_ERROR,e);
             }
         }
         File backupFile = DBUtils.loadDataPath(path);
@@ -135,7 +130,7 @@ public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
                 throw new NulsRuntimeException(AccountErrorCode.FILE_OPERATION_FAILD);
             }
         } catch (IOException e) {
-            throw new NulsRuntimeException(AccountErrorCode.IO_ERROR);
+            throw new NulsRuntimeException(AccountErrorCode.IO_ERROR,e);
         }
         FileOutputStream fileOutputStream = null;
         try {
@@ -143,13 +138,14 @@ public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
             //convert keystore to JSON to store
             fileOutputStream.write(JSONUtils.obj2json(accountKeyStoreDto).getBytes());
         } catch (Exception e) {
-            throw new NulsRuntimeException(AccountErrorCode.PARSE_JSON_FAILD);
+            throw new NulsRuntimeException(AccountErrorCode.PARSE_JSON_FAILD,e);
         } finally {
             if (fileOutputStream != null) {
                 try {
                     fileOutputStream.close();
                 } catch (IOException e) {
                     Log.error(e);
+                    throw new NulsRuntimeException(AccountErrorCode.IO_ERROR,e);
                 }
             }
         }

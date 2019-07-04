@@ -1,6 +1,5 @@
 package io.nuls.contract.rpc.resource.impl;
 
-import com.googlecode.jsonrpc4j.JsonRpcClientException;
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import io.nuls.base.RPCUtil;
@@ -8,6 +7,7 @@ import io.nuls.base.basic.AddressTool;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountInfo;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
+import io.nuls.contract.constant.AccountErrorCode;
 import io.nuls.contract.model.BalanceInfo;
 import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.contract.model.RpcResult;
@@ -16,7 +16,6 @@ import io.nuls.contract.rpc.resource.AccountResource;
 import io.nuls.contract.service.AccountKeyStoreService;
 import io.nuls.contract.service.AccountService;
 import io.nuls.core.basic.Page;
-import io.nuls.core.exception.NulsException;
 import io.nuls.core.exception.NulsRuntimeException;
 import io.nuls.core.log.Log;
 import io.nuls.core.parse.JSONUtils;
@@ -46,12 +45,9 @@ public class AccountResourceImpl implements AccountResource {
             System.out.println(info.toString());
             Log.info("input : "+id);
             return "test"+id;
-        }catch (JsonRpcClientException e){
-            Log.info("---1----"+e.getData().toString());
-            return e.getData()+"--"+e.getMessage();
-        }catch (Throwable e){
-            Log.info("---2----"+e.getMessage());
-            return e.getMessage();
+        }catch (NulsRuntimeException e){
+            Log.info("-------"+e.getMessage());
+            return e.getCode()+"---"+e.getMessage();
         }
     }
 
@@ -63,9 +59,10 @@ public class AccountResourceImpl implements AccountResource {
             Account account=accountService.createAccount(chainId,password);
             map.put("address",account.getAddress().toString());
             result.setResult(map);
-        }catch (Exception e){
+        }catch (NulsRuntimeException e){
             Log.error(e);
             RpcResultError error = new RpcResultError();
+            error.setCode(e.getCode());
             error.setMessage(e.getMessage());
             result.setError(error);
             result.setSuccess(false);
@@ -80,31 +77,31 @@ public class AccountResourceImpl implements AccountResource {
             return RpcResult.paramError("[address] is not null");
         }
         if (!AddressTool.validAddress(chainId, address)) {
-            return RpcResult.paramError("[address] is inValid");
+            return RpcResult.failed(RpcErrorCode.ADDRESS_ERROR);
         }
         Account account= null;
         try {
             account = accountService.getAccount(chainId,address);
-        } catch (Throwable e) {
+        } catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getMessage());
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }
 
         if(account!=null){
             try {
                 AccountInfo accountInfo= new AccountInfo();
+                accountInfo.setChainId(account.getChainId());
                 accountInfo.setAddress(account.getAddress().toString());
                 BalanceInfo balanceInfo=accountService.getAccountBalance(chainId, assetId,address);
                 accountInfo.setBalance(balanceInfo.getBalance());
                 accountInfo.setTotalBalance(balanceInfo.getTotalBalance());
                 result.setResult(accountInfo);
-            } catch (Throwable e) {
+            } catch (NulsRuntimeException e) {
                 Log.error(e);
-                return RpcResult.paramError(e.getMessage());
+                return RpcResult.paramError(e.getCode(),e.getMessage());
             }
         }else {
-            RpcResultError error = new RpcResultError();
-            error.setMessage("account is not exist");
+            RpcResultError error = new RpcResultError(AccountErrorCode.ACCOUNT_NOT_EXIST.getCode(),AccountErrorCode.ACCOUNT_NOT_EXIST.getMsg());
             result.setError(error);
             result.setSuccess(false);
         }
@@ -124,9 +121,9 @@ public class AccountResourceImpl implements AccountResource {
         List<Account> accountList= null;
         try {
             accountList = accountService.getAccountList(chainId);
-        } catch (Throwable e) {
+        } catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getMessage());
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }
         int totalSize=0;
         if(accountList!=null){
@@ -189,12 +186,9 @@ public class AccountResourceImpl implements AccountResource {
             Map<String,String> map = new HashMap<String,String>();
             map.put("address",account.getAddress().toString());
             result.setResult(map);
-        } catch (NulsRuntimeException e){
+        }catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getMessage());
-        }catch (NulsException e){
-            Log.error(e);
-            return RpcResult.failed(RpcErrorCode.IMPORT_ACCOUNT_KEYSTORE_ERROR);
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }catch (IOException e) {
             Log.error(e);
             return RpcResult.failed(RpcErrorCode.ACCOUNTKEYSTORE_FILE_DAMAGED);
@@ -216,9 +210,9 @@ public class AccountResourceImpl implements AccountResource {
             Map<String,String> map = new HashMap<String,String>();
             map.put("address",account.getAddress().toString());
             return RpcResult.success(map);
-        } catch (NulsException e) {
+        } catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getMessage());
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }
     }
 
@@ -234,11 +228,10 @@ public class AccountResourceImpl implements AccountResource {
             String unencryptedPrivateKey= accountService.getPrivateKey(chainId,address,password);
             Map<String,String> map = new HashMap<String,String>();
             map.put("privateKey",unencryptedPrivateKey);
-            RpcResult.success(map);
-        } catch (NulsException e) {
+            return RpcResult.success(map);
+        } catch (NulsRuntimeException e) {
             Log.error(e);
-            return RpcResult.paramError(e.getMessage());
+            return RpcResult.paramError(e.getCode(),e.getMessage());
         }
-        return null;
     }
 }
