@@ -1,5 +1,7 @@
 package io.nuls.contract.model;
 
+import io.nuls.core.constant.ErrorCode;
+
 public enum RpcErrorCode {
 
     // 参数不对
@@ -14,17 +16,59 @@ public enum RpcErrorCode {
     // 合约验证失败
     CONTRACT_VALIDATION_FAILED("102", "Contract verification failed."),
 
-    //数据未找到
-    DATA_NOT_EXISTS("404", "Data not found!"),
+    //参数为空
+    NULL_PARAMETER("103","contract parameter is null"),
 
-    //交易解析错误
-    TX_PARSE_ERROR("999", "Transaction parse error!"),
+    INSUFFICIENT_BALANCE("200","sender is insufficient balance"),
 
-    //脚本执行错误
-    TX_SHELL_ERROR("755", "Shell execute error!"),
+    CONTRACT_TX_CREATE_ERROR("202","create contract transaction error"),
 
+    SIGNATURE_ERROR("203","transaction data signature error"),
+
+    BROADCAST_TX_ERROR("204","broadcast transaction error"),
+
+    VALIADE_PW_ERROR("205","validation password error"),
+
+    VALIADE_CONTRACT_CALL_ERROR("206","validation contract call error"),
+
+    VALIADE_CONTRACT_DELETE_ERROR("207","validation contract delete error"),
+
+    CONTRACT_TX_CALL_ERROR("208","call contract transaction error"),
+
+    CONTRACT_TX_DELETE_ERROR("209","delete contract transaction error"),
+
+    GET_CONTRACT_METHODARGS_EEROR("210","get contract method args error"),
+
+    ACCOUNTKEYSTORE_FILE_DAMAGED("301","account keystore file damaged"),
+
+    IMPORT_ACCOUNT_KEYSTORE_ERROR("302","import account by keyStore error"),
+
+    ACCOUNT_IS_NOT_EXIST("303","this account is not exist at local database"),
     //系统未知错误
-    SYS_UNKNOWN_EXCEPTION("10002", "System unknown error!");
+    SYS_UNKNOWN_EXCEPTION("10002", "System unknown error!"),
+
+
+    PASSWORD_IS_WRONG("ac_0000","Password is wrong"),
+    ACCOUNT_NOT_EXIST("ac_0001","Account does not exist"),
+    ACCOUNT_IS_ALREADY_ENCRYPTED("ac_0002","The account has been encrypted."),
+    ACCOUNT_EXIST("ac_0003","Account already exists"),
+    ADDRESS_ERROR("ac_0004","Address wrong"),
+    PRIVATE_KEY_WRONG("ac_0005","The private key is wrong"),
+    ACCOUNT_IS_ALREADY_ENCRYPTED_AND_LOCKED("ac_0006","Account is encrypted and locked"),
+
+    FAILED("err_0001","Failed"),
+    IO_ERROR("err_0006","IO error"),
+    PARAMETER_ERROR("err_0012","Parameter error"),
+    PARSE_JSON_FAILD("err_0017","Parse JSON failed"),
+    DESERIALIZE_ERROR("err_0020","File operation fialed"),
+    DB_TABLE_CREATE_ERROR("err_2011","Create DB area error"),
+    DB_SAVE_BATCH_ERROR("err_2012","data batch saving exceptions"),
+    DB_SAVE_ERROR("err_2013","data saving exceptions"),
+    DB_UPDATE_ERROR("err_2014","data update exceptions"),
+    DB_QUERY_ERROR("err_2015","data query exceptions"),
+
+    FILE_OPERATION_FAILD("err_0018","File operation fiald");
+
 
     private String code;
 

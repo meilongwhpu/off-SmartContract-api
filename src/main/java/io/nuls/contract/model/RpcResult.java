@@ -1,39 +1,37 @@
 package io.nuls.contract.model;
 
-import io.nuls.contract.facade.AccountInfo;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.nuls.core.basic.Result;
 
-import java.io.Serializable;
-import java.util.Map;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class RpcResult<T> {
 
-public class RpcResult{
-    private String jsonrpc = "2.0";
+    private boolean success;
 
-    private long id;
+    private T result;
 
-    private Map result;
     private RpcResultError error;
 
-    public String getJsonrpc() {
-        return jsonrpc;
+    public boolean isSuccess() {
+        return success;
     }
 
-    public void setJsonrpc(String jsonrpc) {
-        this.jsonrpc = jsonrpc;
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Map getResult() {
+    public T getResult() {
         return result;
     }
 
-    public RpcResult setResult(Map result) {
+    public RpcResult(){
+
+    };
+    public RpcResult(boolean isSucess){
+        this.success=isSucess;
+    }
+
+    public RpcResult setResult(T result) {
         this.result = result;
         return this;
     }
@@ -47,42 +45,42 @@ public class RpcResult{
         return this;
     }
 
-    public static  RpcResult success(Map t) {
-        RpcResult rpcResult = new RpcResult();
+    public static <T> RpcResult success(T t) {
+        RpcResult rpcResult = new RpcResult(true);
         rpcResult.setResult(t);
         return rpcResult;
     }
 
     public static RpcResult failed(RpcErrorCode errorCode) {
-        RpcResult rpcResult = new RpcResult();
+        RpcResult rpcResult = new RpcResult(false);
         RpcResultError error = new RpcResultError(errorCode);
         rpcResult.setError(error);
         return rpcResult;
     }
 
     public static RpcResult failed(Result result) {
-        RpcResult rpcResult = new RpcResult();
+        RpcResult rpcResult = new RpcResult(false);
         RpcResultError error = new RpcResultError(result.getErrorCode().getCode(), result.getMsg(), null);
         rpcResult.setError(error);
         return rpcResult;
     }
 
-    public static RpcResult dataNotFound() {
-        RpcResult rpcResult = new RpcResult();
-        RpcResultError error = new RpcResultError(RpcErrorCode.DATA_NOT_EXISTS.getCode(), RpcErrorCode.DATA_NOT_EXISTS.getMessage(), null);
+    public static RpcResult paramError() {
+        RpcResult rpcResult = new RpcResult(false);
+        RpcResultError error = new RpcResultError(RpcErrorCode.PARAMS_ERROR.getCode(), RpcErrorCode.PARAMS_ERROR.getMessage(), null);
         rpcResult.setError(error);
         return rpcResult;
     }
 
-    public static RpcResult paramError() {
-        RpcResult rpcResult = new RpcResult();
+    public static RpcResult paramError(String code,String message) {
+        RpcResult rpcResult = new RpcResult(false);
         RpcResultError error = new RpcResultError(RpcErrorCode.PARAMS_ERROR.getCode(), RpcErrorCode.PARAMS_ERROR.getMessage(), null);
         rpcResult.setError(error);
         return rpcResult;
     }
 
     public static RpcResult paramError(String data) {
-        RpcResult rpcResult = new RpcResult();
+        RpcResult rpcResult = new RpcResult(false);
         RpcResultError error = new RpcResultError(RpcErrorCode.PARAMS_ERROR.getCode(), RpcErrorCode.PARAMS_ERROR.getMessage(), data);
         rpcResult.setError(error);
         return rpcResult;
@@ -91,12 +89,10 @@ public class RpcResult{
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
-        sb.append("\"jsonrpc\":")
-                .append('\"').append(jsonrpc).append('\"');
-        sb.append(",\"id\":")
-                .append(id);
+        sb.append("\"success\":")
+                .append('\"').append(success).append('\"');
         sb.append(",\"result\":")
-                .append('\"').append(result.toString()).append('\"');
+                .append('\"').append(result).append('\"');
         sb.append(",\"error\":")
                 .append(error);
         sb.append('}');
