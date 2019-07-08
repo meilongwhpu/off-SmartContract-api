@@ -4,14 +4,14 @@ import io.nuls.base.basic.AddressTool;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountKeyStore;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
-import io.nuls.contract.autoconfig.AccountDataInitTool;
+import io.nuls.contract.autoconfig.ApiModuleInitTool;
 import io.nuls.contract.autoconfig.ApiModuleInfoConfig;
 import io.nuls.contract.constant.AccountConstant;
-import io.nuls.contract.constant.AccountErrorCode;
 import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.contract.service.AccountKeyStoreService;
 import io.nuls.contract.service.AccountService;
 import io.nuls.core.crypto.HexUtil;
+import io.nuls.core.exception.NulsException;
 import io.nuls.core.exception.NulsRuntimeException;
 import io.nuls.core.log.Log;
 import io.nuls.core.model.StringUtils;
@@ -37,7 +37,7 @@ public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
     private AccountService accountService;
 
     @Override
-    public String backupAccountToKeyStore(String path, int chainId, String address, String password) {
+    public String backupAccountToKeyStore(String path, int chainId, String address, String password) throws NulsException {
         if(path==null){
             path=infoConfig.getKeystorePath();
         }
@@ -58,21 +58,21 @@ public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
      * @param password
      * @return
      */
-    public AccountKeyStore accountToKeyStore(int chainId, String address, String password) {
+    public AccountKeyStore accountToKeyStore(int chainId, String address, String password) throws NulsException {
         //check params
         if (!AddressTool.validAddress(chainId, address)) {
-            throw new NulsRuntimeException(AccountErrorCode.ADDRESS_ERROR);
+            throw new NulsRuntimeException(RpcErrorCode.ADDRESS_ERROR);
         }
         //check the account is exist
         Account account = accountService.getAccount(chainId, address);
         if (null == account) {
-            throw new NulsRuntimeException(AccountErrorCode.ACCOUNT_NOT_EXIST);
+            throw new NulsRuntimeException(RpcErrorCode.ACCOUNT_NOT_EXIST);
         }
         AccountKeyStore accountKeyStore = new AccountKeyStore();
         //验证密码
         //verify the password
         if (!account.validatePassword(password)) {
-            throw new NulsRuntimeException(AccountErrorCode.PASSWORD_IS_WRONG);
+            throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
         }
         //如果账户加密,不导出明文私钥
         //if the account is encrypted , the plaintext private key is not exported
@@ -90,31 +90,31 @@ public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
      * 备份keystore文件
      * backup keystore file
      */
-    public String backUpKeyStore(String path, AccountKeyStoreDto accountKeyStoreDto) {
+    public String backUpKeyStore(String path, AccountKeyStoreDto accountKeyStoreDto) throws NulsException {
         //如果备份地址为空，则使用系统默认备份地址
         //if the backup address is empty, the default backup address of the system is used
         if (StringUtils.isBlank(path)) {
-            if (StringUtils.isBlank(AccountDataInitTool.ACCOUNTKEYSTORE_FOLDER_NAME)) {
+            if (StringUtils.isBlank(ApiModuleInitTool.ACCOUNTKEYSTORE_FOLDER_NAME)) {
                 URL resource = ClassLoader.getSystemClassLoader().getResource("");
                 path = resource.getPath();
             } else {
-                path = AccountDataInitTool.ACCOUNTKEYSTORE_FOLDER_NAME;
+                path = ApiModuleInitTool.ACCOUNTKEYSTORE_FOLDER_NAME;
             }
             try {
                 path = URLDecoder.decode(path, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 Log.error(e);
-                throw new NulsRuntimeException(AccountErrorCode.DATA_PARSE_ERROR,e);
+                throw new NulsException(RpcErrorCode.DATA_PARSE_ERROR,e);
             }
         }
         File backupFile = DBUtils.loadDataPath(path);
         //if not directory,create directory
         if (!backupFile.isDirectory()) {
             if (!backupFile.mkdirs()) {
-                throw new NulsRuntimeException(AccountErrorCode.FILE_OPERATION_FAILD);
+                throw new NulsException(RpcErrorCode.FILE_OPERATION_FAILD);
             }
             if (!backupFile.exists() && !backupFile.mkdir()) {
-                throw new NulsRuntimeException(AccountErrorCode.FILE_OPERATION_FAILD);
+                throw new NulsException(RpcErrorCode.FILE_OPERATION_FAILD);
             }
         }
         //根据账户地址生成文件名
@@ -127,10 +127,10 @@ public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
             //如果文件不存在，则创建该文件
             //if the file does not exist, the file is created
             if (!backupFile.exists() && !backupFile.createNewFile()) {
-                throw new NulsRuntimeException(AccountErrorCode.FILE_OPERATION_FAILD);
+                throw new NulsException(RpcErrorCode.FILE_OPERATION_FAILD);
             }
         } catch (IOException e) {
-            throw new NulsRuntimeException(AccountErrorCode.IO_ERROR,e);
+            throw new NulsException(RpcErrorCode.IO_ERROR,e);
         }
         FileOutputStream fileOutputStream = null;
         try {
@@ -138,14 +138,14 @@ public class AccountKeyStoreServiceImpl implements AccountKeyStoreService {
             //convert keystore to JSON to store
             fileOutputStream.write(JSONUtils.obj2json(accountKeyStoreDto).getBytes());
         } catch (Exception e) {
-            throw new NulsRuntimeException(AccountErrorCode.PARSE_JSON_FAILD,e);
+            throw new NulsException(RpcErrorCode.PARSE_JSON_FAILD,e);
         } finally {
             if (fileOutputStream != null) {
                 try {
                     fileOutputStream.close();
                 } catch (IOException e) {
                     Log.error(e);
-                    throw new NulsRuntimeException(AccountErrorCode.IO_ERROR,e);
+                    throw new NulsException(RpcErrorCode.IO_ERROR,e);
                 }
             }
         }

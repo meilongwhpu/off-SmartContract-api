@@ -4,8 +4,8 @@ import io.nuls.base.basic.NulsByteBuffer;
 import io.nuls.base.basic.NulsOutputStreamBuffer;
 import io.nuls.base.data.Address;
 import io.nuls.base.data.BaseNulsData;
-import io.nuls.contract.constant.AccountErrorCode;
 import io.nuls.contract.account.model.bo.Account;
+import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.core.crypto.AESEncrypt;
 import io.nuls.core.crypto.ECKey;
 import io.nuls.core.crypto.EncryptedData;
@@ -254,20 +254,20 @@ public class AccountPo extends BaseNulsData {
         if (this.isEncrypted()) {
             ObjectUtils.canNotEmpty(password, "the password can not be empty");
             if (!validatePassword(password)) {
-                throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+                throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
             }
             try {
                 unencryptedPrivateKey = AESEncrypt.decrypt(this.getEncryptedPriKey(), password);
                 newPriv = new BigInteger(1, unencryptedPrivateKey);
             } catch (CryptoException e) {
-                throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+                throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
             }
         } else {
             newPriv = new BigInteger(1, this.getPriKey());
         }
         eckey = ECKey.fromPrivate(newPriv);
         if (!Arrays.equals(eckey.getPubKey(), getPubKey())) {
-            throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+            throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
         }
         return eckey;
     }

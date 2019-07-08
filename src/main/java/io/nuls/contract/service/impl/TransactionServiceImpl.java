@@ -1,7 +1,9 @@
 package io.nuls.contract.service.impl;
 
-import com.googlecode.jsonrpc4j.JsonRpcClientException;
+import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.contract.service.TransactionService;
+import io.nuls.core.exception.NulsException;
+import io.nuls.core.exception.NulsRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +14,19 @@ public class TransactionServiceImpl implements TransactionService {
     private HttpClient httpClient;
 
     @Override
-    public boolean broadcastTx(int chainId, String txHex)  throws JsonRpcClientException,Throwable {
+    public boolean broadcastTx(int chainId, String txHex) throws NulsException {
         boolean isSuccess=false;
-        Map result= httpClient.getRpcHttpClient().invoke("broadcastTx",new Object[]{chainId,txHex}, Map.class);
+        Map result= null;
+        try {
+            result = httpClient.getRpcHttpClient().invoke("broadcastTx",new Object[]{chainId,txHex}, Map.class);
+        } catch (Throwable e) {
+            throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR,e.getMessage());
+        }
         boolean  successStr=(boolean) result.get("value");
         if(successStr){
             isSuccess=true;
         }else{
-            throw  new Throwable(result.get("msg").toString());
+            throw new NulsRuntimeException(RpcErrorCode.NULS_SERVICE_ERROR,result.get("msg").toString());
         }
         return isSuccess;
     }

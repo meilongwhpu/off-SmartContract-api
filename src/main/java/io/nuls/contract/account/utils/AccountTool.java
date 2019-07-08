@@ -1,8 +1,8 @@
 package io.nuls.contract.account.utils;
 
 import io.nuls.base.data.Address;
-import io.nuls.contract.constant.AccountErrorCode;
 import io.nuls.contract.account.model.bo.Account;
+import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.core.constant.BaseConstant;
 import io.nuls.core.crypto.ECKey;
 import io.nuls.core.crypto.HexUtil;
@@ -23,7 +23,7 @@ public class AccountTool {
         try {
             key = ECKey.fromPrivate(new BigInteger(1, HexUtil.decode(prikey)));
         } catch (Exception e) {
-            throw new NulsRuntimeException(AccountErrorCode.PRIVATE_KEY_WRONG);
+            throw new NulsRuntimeException(RpcErrorCode.PRIVATE_KEY_WRONG);
         }
         return newAddress(chainId, key.getPubKey());
     }
@@ -44,7 +44,7 @@ public class AccountTool {
             try {
                 key = ECKey.fromPrivate(new BigInteger(1, HexUtil.decode(prikey)));
             } catch (Exception e) {
-                throw new NulsException(AccountErrorCode.PRIVATE_KEY_WRONG, e);
+                throw new NulsException(RpcErrorCode.PRIVATE_KEY_WRONG, e);
             }
         }
         Address address = new Address(chainId, BaseConstant.DEFAULT_ADDRESS_TYPE, SerializeUtils.sha256hash160(key.getPubKey()));

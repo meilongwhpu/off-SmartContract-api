@@ -2,6 +2,7 @@ package io.nuls.contract.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.nuls.core.basic.Result;
+import io.nuls.core.constant.ErrorCode;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RpcResult<T> {
@@ -51,37 +52,43 @@ public class RpcResult<T> {
         return rpcResult;
     }
 
-    public static RpcResult failed(RpcErrorCode errorCode) {
+    public static RpcResult failed(ErrorCode errorCode) {
         RpcResult rpcResult = new RpcResult(false);
         RpcResultError error = new RpcResultError(errorCode);
         rpcResult.setError(error);
         return rpcResult;
     }
-
-    public static RpcResult failed(Result result) {
+    public static RpcResult failed(ErrorCode errorCode,Object data) {
         RpcResult rpcResult = new RpcResult(false);
-        RpcResultError error = new RpcResultError(result.getErrorCode().getCode(), result.getMsg(), null);
+        RpcResultError error = new RpcResultError(errorCode,data);
         rpcResult.setError(error);
         return rpcResult;
     }
 
+ /*   public static RpcResult failed(Result result) {
+        RpcResult rpcResult = new RpcResult(false);
+        RpcResultError error = new RpcResultError(result.getErrorCode().getCode(), result.getMsg(), null);
+        rpcResult.setError(error);
+        return rpcResult;
+    }*/
+
     public static RpcResult paramError() {
         RpcResult rpcResult = new RpcResult(false);
-        RpcResultError error = new RpcResultError(RpcErrorCode.PARAMS_ERROR.getCode(), RpcErrorCode.PARAMS_ERROR.getMessage(), null);
+        RpcResultError error = new RpcResultError(RpcErrorCode.PARAMETER_ERROR.getCode(), RpcErrorCode.PARAMETER_ERROR.getMsg(), null);
         rpcResult.setError(error);
         return rpcResult;
     }
 
     public static RpcResult paramError(String code,String message) {
         RpcResult rpcResult = new RpcResult(false);
-        RpcResultError error = new RpcResultError(RpcErrorCode.PARAMS_ERROR.getCode(), RpcErrorCode.PARAMS_ERROR.getMessage(), null);
+        RpcResultError error = new RpcResultError(code, message, null);
         rpcResult.setError(error);
         return rpcResult;
     }
 
     public static RpcResult paramError(String data) {
         RpcResult rpcResult = new RpcResult(false);
-        RpcResultError error = new RpcResultError(RpcErrorCode.PARAMS_ERROR.getCode(), RpcErrorCode.PARAMS_ERROR.getMessage(), data);
+        RpcResultError error = new RpcResultError(RpcErrorCode.PARAMETER_ERROR.getCode(), RpcErrorCode.PARAMETER_ERROR.getMsg(), data);
         rpcResult.setError(error);
         return rpcResult;
     }

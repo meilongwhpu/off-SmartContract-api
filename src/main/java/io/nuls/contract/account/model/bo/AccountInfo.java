@@ -46,4 +46,18 @@ public class AccountInfo {
         this.totalBalance = totalBalance;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"address\":")
+                .append('\"').append(address).append('\"');
+        sb.append(",\"chainId\":")
+                .append(chainId);
+        sb.append(",\"balance\":")
+                .append('\"').append(balance).append('\"');
+        sb.append(",\"totalBalance\":")
+                .append(totalBalance);
+        sb.append('}');
+        return sb.toString();
+    }
 }

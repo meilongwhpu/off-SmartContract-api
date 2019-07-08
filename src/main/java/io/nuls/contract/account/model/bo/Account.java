@@ -1,7 +1,7 @@
 package io.nuls.contract.account.model.bo;
 
 import io.nuls.base.data.Address;
-import io.nuls.contract.constant.AccountErrorCode;
+import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.core.crypto.AESEncrypt;
 import io.nuls.core.crypto.ECKey;
 import io.nuls.core.crypto.EncryptedData;
@@ -163,10 +163,10 @@ public class Account implements Serializable {
         if (this.isEncrypted()) {
             if (isForce) {
                 if (isLocked()) {
-                    throw new NulsException(AccountErrorCode.ACCOUNT_IS_ALREADY_ENCRYPTED_AND_LOCKED);
+                    throw new NulsException(RpcErrorCode.ACCOUNT_IS_ALREADY_ENCRYPTED_AND_LOCKED);
                 }
             } else {
-                throw new NulsException(AccountErrorCode.ACCOUNT_IS_ALREADY_ENCRYPTED);
+                throw new NulsException(RpcErrorCode.ACCOUNT_IS_ALREADY_ENCRYPTED);
             }
         }
         ECKey eckey = this.getEcKey();
@@ -196,7 +196,7 @@ public class Account implements Serializable {
             this.setPriKey(key.getPrivKeyBytes());
             this.setEcKey(key);
         } catch (Exception e) {
-            throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+            throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
         }
         return true;
     }
@@ -287,19 +287,19 @@ public class Account implements Serializable {
 
     public byte[] getPriKey(String password) throws NulsException {
         if (!FormatValidUtils.validPassword(password)) {
-            throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+            throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
         }
         byte[] unencryptedPrivateKey;
         try {
             unencryptedPrivateKey = AESEncrypt.decrypt(this.getEncryptedPriKey(), password);
         } catch (CryptoException e) {
-            throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+            throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
         }
         BigInteger newPriv = new BigInteger(1, unencryptedPrivateKey);
         ECKey key = ECKey.fromPrivate(newPriv);
 
         if (!Arrays.equals(key.getPubKey(), getPubKey())) {
-            throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+            throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
         }
         return unencryptedPrivateKey;
     }
@@ -327,20 +327,20 @@ public class Account implements Serializable {
         if (this.isEncrypted()) {
             ObjectUtils.canNotEmpty(password, "the password can not be empty");
             if (!validatePassword(password)) {
-                throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+                throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
             }
             try {
                 unencryptedPrivateKey = AESEncrypt.decrypt(this.getEncryptedPriKey(), password);
                 newPriv = new BigInteger(1, unencryptedPrivateKey);
             } catch (CryptoException e) {
-                throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+                throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
             }
         } else {
             newPriv = new BigInteger(1, this.getPriKey());
         }
         eckey = ECKey.fromPrivate(newPriv);
         if (!Arrays.equals(eckey.getPubKey(), getPubKey())) {
-            throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+            throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
         }
         return eckey;
     }

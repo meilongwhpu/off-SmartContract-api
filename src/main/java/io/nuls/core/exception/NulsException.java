@@ -52,6 +52,18 @@ public class NulsException extends Exception {
         this.message = message.getMsg();
     }
 
+    public NulsException(ErrorCode errorCode,String message) {
+        super(errorCode.getMsg());
+        this.errorCode = errorCode;
+        this.code = errorCode.getCode();
+        this.message = message;
+    }
+
+    public NulsException(String code,String message) {
+        super(message);
+        this.code = code;
+        this.message = message;
+    }
 
     /**
      * Constructs a new exception with the specified detail validator and
@@ -117,6 +129,27 @@ public class NulsException extends Exception {
 
     public ErrorCode getErrorCode() {
         return errorCode;
+    }
+
+    public void setErrorCode(ErrorCode errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String format(){

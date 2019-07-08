@@ -1,6 +1,5 @@
 package io.nuls.contract.service;
 
-import com.googlecode.jsonrpc4j.JsonRpcClientException;
 import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountKeyStore;
@@ -11,13 +10,13 @@ import java.util.List;
 
 public interface AccountService {
 
-    public Account createAccount(int chainId,String password);
+    public Account createAccount(int chainId,String password) throws NulsException;
 
-    public Account getAccount(int chainId, String address) ;
+    public Account getAccount(int chainId, String address) throws NulsException;
 
     public List<Account> getAccountList(int chainId);
 
-    public BalanceInfo getAccountBalance(int chainId, int assetId, String address);
+    public BalanceInfo getAccountBalance(int chainId, int assetId, String address) throws NulsException;
 
     /**
      * 数据摘要签名
@@ -30,7 +29,7 @@ public interface AccountService {
      * @return the signData byte[].
      * @throws NulsException nulsException
      */
-    P2PHKSignature signDigest(byte[] digest, int chainId, String address, String password);
+    P2PHKSignature signDigest(byte[] digest, int chainId, String address, String password) throws NulsException;
 
     boolean validationPassword(int chainId,String address, String password);
 
@@ -49,9 +48,9 @@ public interface AccountService {
      * @return the result of the operation.
      * @throws NulsException
      */
-    Account importAccountByKeyStore(AccountKeyStore keyStore, int chainId, String password, boolean overwrite);
+    Account importAccountByKeyStore(AccountKeyStore keyStore, int chainId, String password, boolean overwrite) throws NulsException;
 
-    String getPrivateKey(int chainId, String address, String password) ;
+    String getPrivateKey(int chainId, String address, String password) throws NulsException;
 
-    Account importAccountByPrikey(int chainId, String prikey, String password, boolean overwrite);
+    Account importAccountByPrikey(int chainId, String prikey, String password, boolean overwrite) throws NulsException;
 }

@@ -2,30 +2,19 @@ package io.nuls.contract.rpc.resource.impl;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
-import io.nuls.base.RPCUtil;
-import io.nuls.base.basic.AddressTool;
-import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountInfo;
-import io.nuls.contract.account.model.po.AccountKeyStoreDto;
-import io.nuls.contract.constant.AccountErrorCode;
 import io.nuls.contract.model.BalanceInfo;
 import io.nuls.contract.model.RpcErrorCode;
-import io.nuls.contract.model.RpcResult;
 import io.nuls.contract.model.RpcResultError;
 import io.nuls.contract.rpc.resource.AccountResource;
 import io.nuls.contract.service.AccountKeyStoreService;
 import io.nuls.contract.service.AccountService;
-import io.nuls.core.basic.Page;
 import io.nuls.core.exception.NulsRuntimeException;
 import io.nuls.core.log.Log;
-import io.nuls.core.parse.JSONUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -39,199 +28,33 @@ public class AccountResourceImpl implements AccountResource {
     private AccountKeyStoreService accountKeyStoreService;
 
     @Override
-    public String test(@JsonRpcParam(value = "id") long id) {
+    public Map test(@JsonRpcParam(value = "id") long id) {
+        Map<String,String> map = new HashMap<String,String>();
+            if(id==1){
+                map.put("address","test-result"+id);
+                return map;
+            }else if(id==2){
+                throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR);
+            }
         try{
             BalanceInfo info= accountService.getAccountBalance(2,1,"tNULSeBaMnrs6JKrCy6TQdzYJZkMZJDng7QAsD");
             System.out.println(info.toString());
             Log.info("input : "+id);
-            return "test"+id;
-        }catch (NulsRuntimeException e){
+            map.put("address",id+"-test");
+            return map;
+        }catch (Exception e){
+            RpcResultError error = new RpcResultError(RpcErrorCode.ACCOUNT_NOT_EXIST.getCode(),RpcErrorCode.ACCOUNT_NOT_EXIST.getMsg());
             Log.info("-------"+e.getMessage());
-            return e.getCode()+"---"+e.getMessage();
+            map.put("address",error.getCode()+"---"+error.getMessage());
+            return   map;
         }
     }
 
     @Override
-    public RpcResult createAccount(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "password")String password) {
-        Map<String,String> map = new HashMap<String,String>();
-        RpcResult result = new RpcResult(true);
-        try{
-            Account account=accountService.createAccount(chainId,password);
-            map.put("address",account.getAddress().toString());
-            result.setResult(map);
-        }catch (NulsRuntimeException e){
-            Log.error(e);
-            RpcResultError error = new RpcResultError();
-            error.setCode(e.getCode());
-            error.setMessage(e.getMessage());
-            result.setError(error);
-            result.setSuccess(false);
-        }
-        return result;
-    }
-
-    @Override
-    public RpcResult getAccount(int chainId, int assetId,String address) {
-        RpcResult result = new RpcResult(true);
-        if (address == null) {
-            return RpcResult.paramError("[address] is not null");
-        }
-        if (!AddressTool.validAddress(chainId, address)) {
-            return RpcResult.failed(RpcErrorCode.ADDRESS_ERROR);
-        }
-        Account account= null;
-        try {
-            account = accountService.getAccount(chainId,address);
-        } catch (NulsRuntimeException e) {
-            Log.error(e);
-            return RpcResult.paramError(e.getCode(),e.getMessage());
-        }
-
-        if(account!=null){
-            try {
-                AccountInfo accountInfo= new AccountInfo();
-                accountInfo.setChainId(account.getChainId());
-                accountInfo.setAddress(account.getAddress().toString());
-                BalanceInfo balanceInfo=accountService.getAccountBalance(chainId, assetId,address);
-                accountInfo.setBalance(balanceInfo.getBalance());
-                accountInfo.setTotalBalance(balanceInfo.getTotalBalance());
-                result.setResult(accountInfo);
-            } catch (NulsRuntimeException e) {
-                Log.error(e);
-                return RpcResult.paramError(e.getCode(),e.getMessage());
-            }
-        }else {
-            RpcResultError error = new RpcResultError(AccountErrorCode.ACCOUNT_NOT_EXIST.getCode(),AccountErrorCode.ACCOUNT_NOT_EXIST.getMsg());
-            result.setError(error);
-            result.setSuccess(false);
-        }
-        return result;
-    }
-
-    @Override
-    public RpcResult getAccountList(int chainId, int pageNumber, int pageSize) {
-        Page<String> resultPage;
-        if (pageNumber < 1) {
-            return RpcResult.paramError("[pageNumber] is error");
-        }
-        if ( pageSize < 1) {
-            return RpcResult.paramError("[pageSize] is error");
-        }
-
-        List<Account> accountList= null;
-        try {
-            accountList = accountService.getAccountList(chainId);
-        } catch (NulsRuntimeException e) {
-            Log.error(e);
-            return RpcResult.paramError(e.getCode(),e.getMessage());
-        }
-        int totalSize=0;
-        if(accountList!=null){
-            totalSize=accountList.size();
-        }
-
-        //根据分页参数返回账户地址列表 Returns the account address list according to paging parameters
-        Page<String> page = new Page<String>(pageNumber, pageSize);
-        page.setTotal(totalSize);
-        int start = (pageNumber - 1) * pageSize;
-        if (start >= totalSize) {
-            return RpcResult.success(page);
-        }
-
-        int end = pageNumber * pageSize;
-        if (end > totalSize) {
-            end = totalSize;
-        }
-        accountList = accountList.subList(start, end);
-        resultPage = new Page<>(page);
-        List<String> addressList = new ArrayList<>();
-        for(Account account :accountList){
-            addressList.add(account.getAddress().getBase58());
-        }
-        resultPage.setList(addressList);
-
-        return RpcResult.success(resultPage);
-    }
-
-    @Override
-    public RpcResult exportAccountKeyStore(int chainId, String address, String password, String filePath) {
-        if (address == null ) {
-            return RpcResult.paramError("[address] is not null");
-        }
-        if (password == null ) {
-            return RpcResult.paramError("[password] is not null");
-        }
-        if (filePath == null ) {
-            return RpcResult.paramError("[filePath] is not null");
-        }
-        String backupFileName = accountKeyStoreService.backupAccountToKeyStore(filePath,chainId, address, password);
-        Map<String,String> map = new HashMap<String,String>();
-        map.put("path",backupFileName);
-        return RpcResult.success(map);
-    }
-
-    @Override
-    public RpcResult importAccountByKeystore(int chainId, String password, String keyStore, boolean overwrite) {
-        RpcResult result = new RpcResult(true);
-        if (password == null ) {
-            return RpcResult.paramError("[password] is not null");
-        }
-        if (keyStore == null) {
-            return RpcResult.paramError("[keyStore] is not null");
-        }
-
-        try {
-            AccountKeyStoreDto accountKeyStoreDto = JSONUtils.json2pojo(new String(RPCUtil.decode(keyStore)), AccountKeyStoreDto.class);
-            Account account=  accountService.importAccountByKeyStore(accountKeyStoreDto.toAccountKeyStore(), chainId, password, overwrite);
-            Map<String,String> map = new HashMap<String,String>();
-            map.put("address",account.getAddress().toString());
-            result.setResult(map);
-        }catch (NulsRuntimeException e) {
-            Log.error(e);
-            return RpcResult.paramError(e.getCode(),e.getMessage());
-        }catch (IOException e) {
-            Log.error(e);
-            return RpcResult.failed(RpcErrorCode.ACCOUNTKEYSTORE_FILE_DAMAGED);
-        }
-        return result;
-    }
-
-    @Override
-    public RpcResult importAccountByPriKey(int chainId, String priKey, String password, boolean overwrite) {
-        if (priKey == null ) {
-            return RpcResult.paramError("[priKey] is not null");
-        }
-        if (password == null) {
-            return RpcResult.paramError("[password] is not null");
-        }
-
-        try {
-           Account account= accountService.importAccountByPrikey(chainId, priKey, password, overwrite);
-            Map<String,String> map = new HashMap<String,String>();
-            map.put("address",account.getAddress().toString());
-            return RpcResult.success(map);
-        } catch (NulsRuntimeException e) {
-            Log.error(e);
-            return RpcResult.paramError(e.getCode(),e.getMessage());
-        }
-    }
-
-    @Override
-    public RpcResult exportPriKeyByAddress(int chainId, String address, String password) {
-        if (password == null ) {
-            return RpcResult.paramError("[password] is not null");
-        }
-        if (address == null) {
-            return RpcResult.paramError("[address] is not null");
-        }
-        try {
-            String unencryptedPrivateKey= accountService.getPrivateKey(chainId,address,password);
-            Map<String,String> map = new HashMap<String,String>();
-            map.put("privateKey",unencryptedPrivateKey);
-            return RpcResult.success(map);
-        } catch (NulsRuntimeException e) {
-            Log.error(e);
-            return RpcResult.paramError(e.getCode(),e.getMessage());
-        }
+    public AccountInfo test2(@JsonRpcParam(value = "id") long id) {
+        AccountInfo accountInfo= new AccountInfo();
+        accountInfo.setChainId(2);
+        accountInfo.setAddress("12312312312312");
+        return accountInfo;
     }
 }
