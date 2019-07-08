@@ -5,14 +5,13 @@ import io.nuls.base.basic.AddressTool;
 import io.nuls.base.data.Address;
 import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.base.signture.SignatureUtil;
-import io.nuls.contract.constant.AccountErrorCode;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountKeyStore;
 import io.nuls.contract.account.model.po.AccountPo;
 import io.nuls.contract.account.storage.AccountStorageService;
 import io.nuls.contract.account.utils.AccountTool;
-import io.nuls.contract.constant.ContractErrorCode;
 import io.nuls.contract.model.BalanceInfo;
+import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.contract.service.AccountKeyStoreService;
 import io.nuls.contract.service.AccountService;
 import io.nuls.core.crypto.AESEncrypt;
@@ -20,7 +19,6 @@ import io.nuls.core.crypto.ECKey;
 import io.nuls.core.crypto.HexUtil;
 import io.nuls.core.exception.CryptoException;
 import io.nuls.core.exception.NulsException;
-import io.nuls.core.exception.NulsRuntimeException;
 import io.nuls.core.log.Log;
 import io.nuls.core.model.FormatValidUtils;
 import io.nuls.core.model.StringUtils;
@@ -49,7 +47,7 @@ public class AccountServiceImpl implements AccountService {
     private AccountKeyStoreService accountKeyStoreService;
 
     @Override
-    public Account createAccount(int chainId, String password) {
+    public Account createAccount(int chainId, String password) throws NulsException {
         locker.lock();
         try {
             Account account = AccountTool.createAccount(chainId);
@@ -63,17 +61,16 @@ public class AccountServiceImpl implements AccountService {
             }
             return account;
         } catch (NulsException e) {
-            Log.error(e);
-            throw new NulsRuntimeException(e.getErrorCode());
+            throw new NulsException(e.getErrorCode());
         }finally {
             locker.unlock();
         }
     }
 
     @Override
-    public Account getAccount(int chainId, String address) {
+    public Account getAccount(int chainId, String address) throws NulsException {
         if (!AddressTool.validAddress(chainId, address)) {
-            throw new NulsRuntimeException(AccountErrorCode.ADDRESS_ERROR);
+            throw new NulsException(RpcErrorCode.ADDRESS_ERROR);
         }
         byte[] addressBytes = AddressTool.getAddress(address);
         AccountPo accountPo=accountStorageService.getAccount(addressBytes);
@@ -103,20 +100,22 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public BalanceInfo getAccountBalance(int chainId, int assetId, String address){
+    public BalanceInfo getAccountBalance(int chainId, int assetId, String address) throws NulsException {
         BalanceInfo balanceInfo=null;
         try {
             balanceInfo= httpClient.getRpcHttpClient().invoke("getAccountBalance",new Object[]{chainId,assetId,address},BalanceInfo.class);
-        } catch (Throwable e) {
-            throw new NulsRuntimeException(AccountErrorCode.NULS_SERVICE_ERROR,e);
+        } catch (JsonRpcClientException e) {
+            throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR,e.getMessage());
+        }catch (Throwable e) {
+            throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR);
         }
         return balanceInfo;
     }
 
     @Override
-    public P2PHKSignature signDigest(byte[] digest, int chainId, String address, String password) {
+    public P2PHKSignature signDigest(byte[] digest, int chainId, String address, String password) throws NulsException {
         if (null == digest || digest.length == 0) {
-            throw new NulsRuntimeException(AccountErrorCode.PARAMETER_ERROR);
+            throw new NulsException(RpcErrorCode.PARAMETER_ERROR);
         }
         byte[] addressBytes = AddressTool.getAddress(address);
         AccountPo accountPo=accountStorageService.getAccount(addressBytes);
@@ -125,11 +124,9 @@ public class AccountServiceImpl implements AccountService {
             ECKey  ecKey = accountPo.getEcKey(password);
             byte[] signBytes = SignatureUtil.signDigest(digest, ecKey).serialize();
             return new P2PHKSignature(signBytes, ecKey.getPubKey());
-        }  catch (NulsException e) {
-            throw new NulsRuntimeException(e);
         }catch (IOException e) {
             Log.error(e.getMessage());
-            throw new NulsRuntimeException(AccountErrorCode.IO_ERROR,e);
+            throw new NulsException(RpcErrorCode.IO_ERROR,e);
         }
     }
 
@@ -145,22 +142,22 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account importAccountByKeyStore(AccountKeyStore keyStore, int chainId, String password, boolean overwrite){
+    public Account importAccountByKeyStore(AccountKeyStore keyStore, int chainId, String password, boolean overwrite) throws NulsException {
         if (null == keyStore || StringUtils.isBlank(keyStore.getAddress())) {
-            throw new NulsRuntimeException(AccountErrorCode.PARAMETER_ERROR);
+            throw new NulsException(RpcErrorCode.PARAMETER_ERROR);
         }
         if (!AddressTool.validAddress(chainId, keyStore.getAddress())) {
-            throw new NulsRuntimeException(AccountErrorCode.ADDRESS_ERROR);
+            throw new NulsException(RpcErrorCode.ADDRESS_ERROR);
         }
         if (!FormatValidUtils.validPassword(password)) {
-            throw new NulsRuntimeException(AccountErrorCode.PASSWORD_IS_WRONG);
+            throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
         }
         if (!overwrite) {
             byte[] addressBytes = AddressTool.getAddress(keyStore.getAddress());
             //Query account already exists
             AccountPo accountPo = accountStorageService.getAccount(addressBytes);
             if (null != accountPo) {
-                throw new NulsRuntimeException(AccountErrorCode.ACCOUNT_EXIST);
+                throw new NulsException(RpcErrorCode.ACCOUNT_EXIST);
             }
         }
 
@@ -169,43 +166,34 @@ public class AccountServiceImpl implements AccountService {
         //if the private key is not encrypted, it is not empty
         if (null != keyStore.getPrikey() && keyStore.getPrikey().length > 0) {
             if (!ECKey.isValidPrivteHex(HexUtil.encode(keyStore.getPrikey()))) {
-                throw new NulsRuntimeException(AccountErrorCode.PARAMETER_ERROR);
+                throw new NulsException(RpcErrorCode.PARAMETER_ERROR);
             }
             //create account by private key
             priKey = keyStore.getPrikey();
-            try {
-                account = AccountTool.createAccount(chainId, HexUtil.encode(priKey));
-                //如果私钥生成的地址和keystore的地址不相符，说明私钥错误
-                //if the address generated by the private key does not match the address of the keystore, the private key error
-                if (!account.getAddress().getBase58().equals(keyStore.getAddress())) {
-                    throw new NulsRuntimeException(AccountErrorCode.PRIVATE_KEY_WRONG);
-                }
-            } catch (NulsException e) {
-                throw new NulsRuntimeException(e);
+            account = AccountTool.createAccount(chainId, HexUtil.encode(priKey));
+            //如果私钥生成的地址和keystore的地址不相符，说明私钥错误
+            //if the address generated by the private key does not match the address of the keystore, the private key error
+            if (!account.getAddress().getBase58().equals(keyStore.getAddress())) {
+                throw new NulsException(RpcErrorCode.PRIVATE_KEY_WRONG);
             }
         } else if (null == keyStore.getPrikey() && null != keyStore.getEncryptedPrivateKey()) {
             try {
                 //create account by private key
                 priKey = AESEncrypt.decrypt(HexUtil.decode(keyStore.getEncryptedPrivateKey()), password);
                 account = AccountTool.createAccount(chainId, HexUtil.encode(priKey));
-            } catch (NulsException e) {
-                throw new NulsRuntimeException(e);
-            }catch (CryptoException e) {
-                throw new NulsRuntimeException(AccountErrorCode.PASSWORD_IS_WRONG);
+            } catch (CryptoException e) {
+                throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
             }
             //如果私钥生成的地址和keystore的地址不相符，说明私钥错误
             //if the address generated by the private key does not match the address of the keystore, the private key error
             if (!account.getAddress().getBase58().equals(keyStore.getAddress())) {
-                throw new NulsRuntimeException(AccountErrorCode.PRIVATE_KEY_WRONG);
+                throw new NulsException(RpcErrorCode.PRIVATE_KEY_WRONG);
             }
         } else {
-            throw new NulsRuntimeException(AccountErrorCode.PARAMETER_ERROR);
+            throw new NulsException(RpcErrorCode.PARAMETER_ERROR);
         }
-        try {
-            account.encrypt(password);
-        } catch (NulsException e) {
-            throw new NulsRuntimeException(e);
-        }
+
+        account.encrypt(password);
         accountStorageService.saveAccount(new AccountPo(account));
 
         //backup account to keystore
@@ -215,13 +203,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account importAccountByPrikey(int chainId, String prikey, String password, boolean overwrite) {
+    public Account importAccountByPrikey(int chainId, String prikey, String password, boolean overwrite) throws NulsException {
         //check params
         if (!ECKey.isValidPrivteHex(prikey)) {
-            throw new NulsRuntimeException(AccountErrorCode.PRIVATE_KEY_WRONG);
+            throw new NulsException(RpcErrorCode.PRIVATE_KEY_WRONG);
         }
         if (!FormatValidUtils.validPassword(password)) {
-            throw new NulsRuntimeException(AccountErrorCode.PASSWORD_IS_WRONG);
+            throw new NulsException(RpcErrorCode.PASSWORD_IS_WRONG);
         }
         //not allowed to cover
         if (!overwrite) {
@@ -229,22 +217,14 @@ public class AccountServiceImpl implements AccountService {
             //Query account already exists
             Account account = this.getAccount(chainId, address.getBase58());
             if (null != account) {
-                throw new NulsRuntimeException(AccountErrorCode.ACCOUNT_EXIST);
+                throw new NulsException(RpcErrorCode.ACCOUNT_EXIST);
             }
         }
         //create account by private key
-        Account account;
-        try {
-            account = AccountTool.createAccount(chainId, prikey);
-        } catch (NulsException e) {
-            throw new NulsRuntimeException(AccountErrorCode.PRIVATE_KEY_WRONG);
-        }
+        Account account = AccountTool.createAccount(chainId, prikey);
+
         //encrypting account private key
-        try {
-            account.encrypt(password);
-        } catch (NulsException e) {
-            throw new NulsRuntimeException(e);
-        }
+        account.encrypt(password);
 
         //save account to storage
         accountStorageService.saveAccount(new AccountPo(account));
@@ -256,20 +236,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String getPrivateKey(int chainId, String address, String password)  throws JsonRpcClientException{
+    public String getPrivateKey(int chainId, String address, String password) throws NulsException {
         //check whether the account exists
         Account account = this.getAccount(chainId, address);
         if (null == account) {
-            throw new NulsRuntimeException(AccountErrorCode.ACCOUNT_NOT_EXIST);
+            throw new NulsException(RpcErrorCode.ACCOUNT_NOT_EXIST);
         }
         //加过密(有密码) 就验证密码 Already encrypted(Added password), verify password
         if (account.isEncrypted()) {
-            try {
-                byte[] priKeyBytes = account.getPriKey(password);
-                return HexUtil.encode(priKeyBytes);
-            } catch (NulsException e) {
-                throw new NulsRuntimeException(AccountErrorCode.PASSWORD_IS_WRONG);
-            }
+            byte[] priKeyBytes = account.getPriKey(password);
+            return HexUtil.encode(priKeyBytes);
         } else {
             return null;
         }

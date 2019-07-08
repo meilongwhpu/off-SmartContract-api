@@ -3,6 +3,7 @@ package io.nuls.contract.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.nuls.contract.utils.JSONUtils;
 import io.nuls.contract.utils.StringUtils;
+import io.nuls.core.constant.ErrorCode;
 
 import java.io.Serializable;
 

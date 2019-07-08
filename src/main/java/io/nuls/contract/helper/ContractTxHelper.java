@@ -5,24 +5,17 @@ import io.nuls.base.basic.TransactionFeeCalculator;
 import io.nuls.base.data.CoinData;
 import io.nuls.base.data.CoinFrom;
 import io.nuls.base.data.CoinTo;
-import io.nuls.base.data.Transaction;
-import io.nuls.contract.model.RpcErrorCode;
-import io.nuls.contract.model.RpcResult;
 import io.nuls.contract.model.txdata.CallContractData;
 import io.nuls.contract.model.txdata.CreateContractData;
 import io.nuls.contract.model.txdata.DeleteContractData;
 import io.nuls.core.basic.NulsData;
-import io.nuls.core.basic.Result;
 import io.nuls.core.basic.VarInt;
-import io.nuls.core.exception.NulsException;
 import io.nuls.core.model.LongUtils;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.math.BigInteger;
 
 import static io.nuls.contract.constant.ContractConstant.UNLOCKED_TX;
-import static io.nuls.core.constant.CommonCodeConstanst.FAILED;
 
 @Component
 public class ContractTxHelper {

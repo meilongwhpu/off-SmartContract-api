@@ -1,5 +1,7 @@
 package io.nuls.contract.model;
 
+import io.nuls.core.constant.ErrorCode;
+
 public class RpcResultError {
     private String code;
 
@@ -22,14 +24,14 @@ public class RpcResultError {
         this.message = message;
     }
 
-    public RpcResultError(RpcErrorCode rpcErrorCode) {
+    public RpcResultError(ErrorCode rpcErrorCode) {
         this.code = rpcErrorCode.getCode();
-        this.message = rpcErrorCode.getMessage();
+        this.message = rpcErrorCode.getMsg();
     }
 
-    public RpcResultError(RpcErrorCode rpcErrorCode, Object data) {
+    public RpcResultError(ErrorCode rpcErrorCode, Object data) {
         this.code = rpcErrorCode.getCode();
-        this.message = rpcErrorCode.getMessage();
+        this.message = rpcErrorCode.getMsg();
         this.data = data;
     }
 

@@ -26,7 +26,7 @@ package io.nuls.base;
 
 import io.nuls.base.basic.NulsByteBuffer;
 import io.nuls.base.data.BaseNulsData;
-import io.nuls.core.constant.CommonCodeConstanst;
+import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.core.crypto.HexUtil;
 import io.nuls.core.model.StringUtils;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class RPCUtil {
 
     public static <T> T getInstance(byte[] bytes, Class<? extends BaseNulsData> clazz) {
         if (null == bytes || bytes.length == 0) {
-            logger.error("error code-" + CommonCodeConstanst.DESERIALIZE_ERROR);
+            logger.error("error code-" + RpcErrorCode.DESERIALIZE_ERROR);
             return null;
         }
         try {
@@ -53,7 +53,7 @@ public class RPCUtil {
             baseNulsData.parse(new NulsByteBuffer(bytes));
             return (T) baseNulsData;
         } catch (Exception e) {
-            logger.error("error code-" + CommonCodeConstanst.DESERIALIZE_ERROR);
+            logger.error("error code-" + RpcErrorCode.DESERIALIZE_ERROR);
             return null;
         }
     }
@@ -68,7 +68,7 @@ public class RPCUtil {
      */
     public static <T> T getInstanceRpcStr(String data, Class<? extends BaseNulsData> clazz) {
         if (StringUtils.isBlank(data)) {
-            logger.error("error code-" + CommonCodeConstanst.DESERIALIZE_ERROR);
+            logger.error("error code-" + RpcErrorCode.DESERIALIZE_ERROR);
             return null;
         }
         return getInstance(decode(data), clazz);

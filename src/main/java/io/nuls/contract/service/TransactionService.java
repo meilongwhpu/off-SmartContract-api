@@ -1,9 +1,9 @@
 package io.nuls.contract.service;
 
-import com.googlecode.jsonrpc4j.JsonRpcClientException;
+import io.nuls.core.exception.NulsException;
 
 public interface TransactionService {
 
-    public boolean broadcastTx(int chainId, String txHex) throws JsonRpcClientException,Throwable;
+    public boolean broadcastTx(int chainId, String txHex) throws NulsException;
 
 }

@@ -20,7 +20,7 @@ public class HttpClient {
             Log.info("api module service path: "+accessPath);
             rpcHttpClient=new JsonRpcHttpClient(new URL(accessPath));
         }catch (Exception e){
-            e.printStackTrace();
+            Log.error(e);
         }
 
     }

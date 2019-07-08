@@ -1,5 +1,7 @@
 package io.nuls.contract.service;
 
+import io.nuls.core.exception.NulsException;
+
 public interface AccountKeyStoreService {
     /**
      * 备份账户到keyStore
@@ -11,5 +13,5 @@ public interface AccountKeyStoreService {
      * @param password the password of the account key store.
      * @return KeyStore path
      */
-    String backupAccountToKeyStore(String path, int chainId, String address, String password);
+    String backupAccountToKeyStore(String path, int chainId, String address, String password) throws NulsException;
 }

@@ -114,4 +114,23 @@ public class Page<T> {
     public void setList(List<T> list) {
         this.list = list;
     }
+
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"pageNumber\":")
+                .append('\"').append(pageNumber).append('\"');
+        sb.append(",\"pageSize\":")
+                .append(pageSize);
+        sb.append(",\"total\":")
+                .append('\"').append(total).append('\"');
+        sb.append(",\"pages\":")
+                .append(pages);
+        sb.append(",\"list\":")
+                .append(list.toString());
+        sb.append('}');
+        return sb.toString();
+    }
+
 }

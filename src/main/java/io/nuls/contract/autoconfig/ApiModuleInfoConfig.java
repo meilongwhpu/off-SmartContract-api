@@ -13,6 +13,9 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     @Value("${nuls.api.module.service.port}")
     private String apiModulePort;
 
+    @Value("${language}")
+    private String language;
+
     @Value("${dataPath}")
     private String dataPath;
 
@@ -98,6 +101,14 @@ public class ApiModuleInfoConfig  implements InitializingBean {
 
     public void setKeystorePath(String keystorePath) {
         this.keystorePath = keystorePath;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     @Override
