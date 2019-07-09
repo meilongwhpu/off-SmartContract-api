@@ -16,7 +16,7 @@ public interface AccountService {
 
     public List<Account> getAccountList(int chainId);
 
-    public BalanceInfo getAccountBalance(int chainId, int assetId, String address) throws NulsException;
+    public BalanceInfo getAccountBalance(int chainId,int assetChainId, int assetId, String address) throws NulsException;
 
     /**
      * 数据摘要签名

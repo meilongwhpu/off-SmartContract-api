@@ -13,6 +13,8 @@ public class ContractInfo {
 
     private String createTxHash;
 
+    private String alias;
+
     private long blockHeight;
 
     private boolean success;
@@ -22,6 +24,8 @@ public class ContractInfo {
     private String errorMsg;
 
     private boolean isNrc20;//是否支持NRC20协议(0-否、1-是)
+
+    private boolean isDirectPayable;
 
     private int status; // -1,执行失败，0未认证 1正在审核 2通过验证 3 已删除
 
@@ -51,6 +55,8 @@ public class ContractInfo {
     private List<String> owners;
 
     private ContractResultInfo resultInfo;
+
+
     @JsonIgnore
     private boolean isNew;
 
@@ -77,6 +83,14 @@ public class ContractInfo {
 
     public void setCreateTxHash(String createTxHash) {
         this.createTxHash = createTxHash;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public long getBlockHeight() {
@@ -109,6 +123,14 @@ public class ContractInfo {
 
     public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;
+    }
+
+    public boolean isDirectPayable() {
+        return isDirectPayable;
+    }
+
+    public void setDirectPayable(boolean directPayable) {
+        isDirectPayable = directPayable;
     }
 
     public boolean isNrc20() {

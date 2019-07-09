@@ -2,7 +2,7 @@ package io.nuls.contract;
 
 import com.googlecode.jsonrpc4j.spring.JsonServiceExporter;
 import io.nuls.contract.autoconfig.ApiModuleInitTool;
-import io.nuls.contract.model.TempErrorResolver;
+import io.nuls.contract.model.DefineErrorResolver;
 import io.nuls.core.log.Log;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -20,7 +20,7 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
             dataInitTool.init();
             Map<String, JsonServiceExporter> beansOfType = contextRefreshedEvent.getApplicationContext().getBeansOfType(JsonServiceExporter.class);
             for(JsonServiceExporter bean : beansOfType.values()) {
-                bean.setErrorResolver(TempErrorResolver.INSTANCE);
+                bean.setErrorResolver(DefineErrorResolver.INSTANCE);
                 bean.afterPropertiesSet();
             }
         } catch (Exception e) {

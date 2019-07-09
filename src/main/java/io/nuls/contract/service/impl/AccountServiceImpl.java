@@ -100,14 +100,14 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public BalanceInfo getAccountBalance(int chainId, int assetId, String address) throws NulsException {
+    public BalanceInfo getAccountBalance(int chainId, int assetChainId,int assetId, String address) throws NulsException {
         BalanceInfo balanceInfo=null;
         try {
-            balanceInfo= httpClient.getRpcHttpClient().invoke("getAccountBalance",new Object[]{chainId,assetId,address},BalanceInfo.class);
+            balanceInfo= httpClient.getRpcHttpClient().invoke("getAccountBalance",new Object[]{chainId,assetChainId,assetId,address},BalanceInfo.class);
         } catch (JsonRpcClientException e) {
             throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR,e.getMessage());
         }catch (Throwable e) {
-            throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR);
+            throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR,e.getMessage());
         }
         return balanceInfo;
     }

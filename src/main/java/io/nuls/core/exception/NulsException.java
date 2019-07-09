@@ -49,7 +49,6 @@ public class NulsException extends Exception {
         super(message.getMsg());
         this.errorCode = message;
         this.code = message.getCode();
-        this.message = message.getMsg();
     }
 
     public NulsException(ErrorCode errorCode,String message) {

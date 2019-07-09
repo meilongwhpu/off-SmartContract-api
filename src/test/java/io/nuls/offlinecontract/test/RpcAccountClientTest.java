@@ -1,6 +1,7 @@
 package io.nuls.offlinecontract.test;
 
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
+import com.googlecode.jsonrpc4j.JsonRpcParam;
 import io.nuls.contract.account.model.bo.AccountInfo;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
 import io.nuls.contract.model.RpcResult;
@@ -15,11 +16,12 @@ import java.util.Map;
 
 public class RpcAccountClientTest {
     private static JsonRpcHttpClient memberClient;
-    private static final long test_memberId = 1L;
+    private static final long test_memberId = 3L;
 
     private int chainId=2;
     private  int assetId=1;
-    private String address="tNULSeBaMvEtDfvZuukDf2mVyfGo3DdiN8KLRG3";
+    private int assetChainId=2;
+    private String address="tNULSeBaMvEtDfvZuukDf2mVyfGo3DdiN8KLRG";
     private String password="nuls123456";
 
     private int pageNumber=1;
@@ -43,7 +45,7 @@ public class RpcAccountClientTest {
 
     @Test
     public  void getAccount() throws Throwable{
-        AccountInfo result = memberClient.invoke("getAccount", new Object[] {chainId,assetId,address}, AccountInfo.class);
+        AccountInfo result = memberClient.invoke("getAccount", new Object[] {chainId,assetChainId,assetId,address}, AccountInfo.class);
         System.out.println(result.toString());
     }
 

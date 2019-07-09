@@ -34,6 +34,9 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     @Value("${assetId}")
     private String assetId;
 
+    @Value("${assetChainId}")
+    private String assetChainId;
+
     public String getApiModuleApi() {
         return apiModuleApi;
     }
@@ -109,6 +112,14 @@ public class ApiModuleInfoConfig  implements InitializingBean {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public String getAssetChainId() {
+        return assetChainId;
+    }
+
+    public void setAssetChainId(String assetChainId) {
+        this.assetChainId = assetChainId;
     }
 
     @Override

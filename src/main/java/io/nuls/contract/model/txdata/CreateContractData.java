@@ -29,6 +29,7 @@ public class CreateContractData extends BaseNulsData implements ContractData {
         size += Address.ADDRESS_LENGTH;
         size += Address.ADDRESS_LENGTH;
         size += SerializeUtils.sizeOfBytes(code);
+        size += SerializeUtils.sizeOfString(alias);
         size += SerializeUtils.sizeOfInt64();
         size += SerializeUtils.sizeOfInt64();
         size += 1;
@@ -52,6 +53,7 @@ public class CreateContractData extends BaseNulsData implements ContractData {
         stream.write(sender);
         stream.write(contractAddress);
         stream.writeBytesWithLength(code);
+        stream.writeString(alias);
         stream.writeInt64(gasLimit);
         stream.writeInt64(price);
         stream.write(argsCount);
@@ -74,6 +76,7 @@ public class CreateContractData extends BaseNulsData implements ContractData {
         this.sender = byteBuffer.readBytes(Address.ADDRESS_LENGTH);
         this.contractAddress = byteBuffer.readBytes(Address.ADDRESS_LENGTH);
         this.code = byteBuffer.readByLengthByte();
+        this.alias = byteBuffer.readString();
         this.gasLimit = byteBuffer.readInt64();
         this.price = byteBuffer.readInt64();
         this.argsCount = byteBuffer.readByte();
@@ -184,5 +187,4 @@ public class CreateContractData extends BaseNulsData implements ContractData {
         addressSet.add(contractAddress);
         return addressSet;
     }
-
 }

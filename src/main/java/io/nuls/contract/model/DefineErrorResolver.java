@@ -26,22 +26,30 @@ package io.nuls.contract.model;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.googlecode.jsonrpc4j.ErrorData;
 import com.googlecode.jsonrpc4j.ErrorResolver;
+import io.nuls.core.exception.NulsRuntimeException;
 
 import java.lang.reflect.Method;
 import java.util.List;
+
+import static com.googlecode.jsonrpc4j.ErrorResolver.JsonError.ERROR_NOT_HANDLED;
 
 /**
  * @author: PierreLuo
  * @date: 2019-07-09
  */
-public enum  TempErrorResolver implements ErrorResolver {
+public enum DefineErrorResolver implements ErrorResolver {
     INSTANCE;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public JsonError resolveError(Throwable thrownException, Method method, List<JsonNode> arguments) {
-        return new JsonError(111, "222", new ErrorData("333", "444"));
+    public JsonError resolveError(Throwable throwable, Method method, List<JsonNode> arguments) {
+        if(throwable.getClass().equals(NulsRuntimeException.class)){
+            NulsRuntimeException exception=(NulsRuntimeException)throwable;
+            return new JsonError(Integer.valueOf(exception.getCode()), throwable.getMessage(), null);
+        }else{
+            return new JsonError(ERROR_NOT_HANDLED.code, throwable.getMessage(), null);
+        }
     }
 }

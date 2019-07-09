@@ -81,7 +81,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public AccountInfo getAccount(int chainId, int assetId, String address) {
+    public AccountInfo getAccount(int chainId,int assetChainId, int assetId, String address) {
         if (address == null) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"address");
         }
@@ -101,7 +101,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
                 AccountInfo accountInfo= new AccountInfo();
                 accountInfo.setChainId(account.getChainId());
                 accountInfo.setAddress(account.getAddress().toString());
-                BalanceInfo balanceInfo=accountService.getAccountBalance(chainId, assetId,address);
+                BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetChainId, assetId,address);
                 accountInfo.setBalance(balanceInfo.getBalance());
                 accountInfo.setTotalBalance(balanceInfo.getTotalBalance());
                 return accountInfo;
@@ -247,7 +247,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public Map createContract(int chainId, int assetId, String sender,String password, String contractCode,String alias, Object[] args, long gasLimit, long price,String remark) {
+    public Map createContract(int chainId,int assetChainId,int assetId, String sender,String password, String contractCode,String alias, Object[] args, long gasLimit, long price,String remark) {
         if (gasLimit < 0) {
             throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"gasLimit");
         }
@@ -262,7 +262,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
         if (StringUtils.isBlank(contractCode)) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"contractCode");
         }
-        if(FormatValidUtils.validAlias(alias)){
+        if(!FormatValidUtils.validAlias(alias)){
             throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"alias");
         }
 
@@ -316,7 +316,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
                  CreateContractData createContractData= contractTxHelper.getCreateContractData(senderBytes,contractAddressBytes,BigInteger.ZERO,gamLimit,price,contractCodeBytes,alias,convertArgs);
 
                  // 计算CoinData
-                 BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetId,sender);
+                 BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetChainId,assetId,sender);
                  CoinData coinData = contractTxHelper.makeCoinData(chainId,assetId,senderBytes, contractAddressBytes,gasLimit,price,BigInteger.ZERO,tx.size(),createContractData,balanceInfo.getNonce(),balanceInfo.getBalance());
                  if(coinData==null){
                      throw new NulsRuntimeException(RpcErrorCode.INSUFFICIENT_BALANCE);
@@ -388,7 +388,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public Map callContract(int chainId, int assetId, String sender,String password, String contractAddress, BigInteger value, String methodName, String methodDesc, Object[] args, long gasLimit, long price,String remark) {
+    public Map callContract(int chainId, int assetChainId,int assetId, String sender,String password, String contractAddress, BigInteger value, String methodName, String methodDesc, Object[] args, long gasLimit, long price,String remark) {
         if (value.compareTo(BigInteger.ZERO) < 0) {
             throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"value");
         }
@@ -445,7 +445,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
             //组装txData
             CallContractData createContractData= contractTxHelper.getCallContractData(senderBytes, contractAddressBytes,value,gasLimit,price,methodName,methodDesc, convertArgs);
 
-            BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetId,sender);
+            BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetChainId,assetId,sender);
             CoinData coinData = contractTxHelper.makeCoinData(chainId,assetId,senderBytes, contractAddressBytes,gasLimit,price,value,tx.size(),createContractData,balanceInfo.getNonce(),balanceInfo.getBalance());
             if(coinData==null){
                 throw new NulsRuntimeException(RpcErrorCode.INSUFFICIENT_BALANCE);
@@ -482,7 +482,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public Map deleteContract(int chainId, int assetId, String sender,String password, String contractAddress,String remark) {
+    public Map deleteContract(int chainId,int assetChainId, int assetId, String sender,String password, String contractAddress,String remark) {
         if (!AddressTool.validAddress(chainId, sender)) {
             throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"sender's address");
         }
@@ -510,7 +510,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
         byte[] senderBytes = AddressTool.getAddress(sender);
         try {
             DeleteContractData deleteContractData= contractTxHelper.getDeleteContractData(contractAddressBytes,senderBytes);
-            BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetId,sender);
+            BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetChainId,assetId,sender);
             CoinData coinData = contractTxHelper.makeCoinData(chainId,assetId,senderBytes, contractAddressBytes,0L, 0L, BigInteger.ZERO,tx.size(),deleteContractData,balanceInfo.getNonce(),balanceInfo.getBalance());
             if(coinData==null){
                 throw new NulsRuntimeException(RpcErrorCode.INSUFFICIENT_BALANCE);

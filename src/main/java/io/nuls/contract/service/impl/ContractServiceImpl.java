@@ -55,7 +55,7 @@ public class ContractServiceImpl implements ContractService {
         }
         if(result!=null){
             Map constructor = (Map)result.get("constructor");
-            boolean isNrc20= (boolean) result.get("isNrc20");
+            boolean isNrc20= (boolean) result.get("nrc20");
             List<Map> args = (List<Map>) constructor.get("args");
             int size = args.size();
             ProgramMethodArg[] argTypes = new ProgramMethodArg[size];
