@@ -38,7 +38,7 @@
         <dependency>
             <groupId>com.github.briandilley.jsonrpc4j</groupId>
             <artifactId>jsonrpc4j</artifactId>
-            <version>1.5.3.1-CUSTOM</version>
+            <version>1.5.3</version>
         </dependency>
         <dependency>
             <groupId>javax.portlet</groupId>
@@ -110,8 +110,8 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

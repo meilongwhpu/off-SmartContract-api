@@ -41,7 +41,7 @@ public class DataCacher<T> {
     private Map<NulsHash, CompletableFuture<T>> cacher = new HashMap<>();
 
     public CompletableFuture<T> addFuture(NulsHash hash) {
-        var future = new CompletableFuture<T>();
+        CompletableFuture future = new CompletableFuture<T>();
         cacher.put(hash, future);
         return future;
     }

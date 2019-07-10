@@ -306,6 +306,8 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
             CreateContractTransaction tx = new CreateContractTransaction();
            try{
                int gamLimit=contractService.imputedContractCreateGas(chainId,sender,contractCode,args);
+               System.out.println("gamLimit: "+gamLimit);
+               System.out.println("gasLimit: "+gasLimit);
                  if (StringUtils.isNotBlank(remark)) {
                      tx.setRemark(remark.getBytes(StandardCharsets.UTF_8));
                  }
@@ -317,7 +319,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
                  // 计算CoinData
                  BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetChainId,assetId,sender);
-                 CoinData coinData = contractTxHelper.makeCoinData(chainId,assetId,senderBytes, contractAddressBytes,gasLimit,price,BigInteger.ZERO,tx.size(),createContractData,balanceInfo.getNonce(),balanceInfo.getBalance());
+                 CoinData coinData = contractTxHelper.makeCoinData(chainId,assetId,senderBytes, contractAddressBytes,gamLimit,price,BigInteger.ZERO,tx.size(),createContractData,balanceInfo.getNonce(),balanceInfo.getBalance());
                  if(coinData==null){
                      throw new NulsRuntimeException(RpcErrorCode.INSUFFICIENT_BALANCE);
                  }

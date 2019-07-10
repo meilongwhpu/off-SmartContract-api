@@ -104,7 +104,7 @@ public class CollectionUtils {
      * @return Map  map对象
      */
     public static <K, V> Map<K, V> getSynSizedMap(int size) {
-        return Collections.synchronizedMap(new LinkedHashMap<>(size) {
+        return Collections.synchronizedMap(new LinkedHashMap<K,V>(size) {
             @Override
             protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
                 return size() > size;
@@ -119,7 +119,7 @@ public class CollectionUtils {
      * @return Set  set对象
      */
     public static <T> Set<T> getSynSizedSet(int size) {
-        return Collections.synchronizedSet(new TreeSet<>(){
+        return Collections.synchronizedSet(new TreeSet<T>(){
             @Override
             public boolean add(T t) {
                 if (size() >= size) {

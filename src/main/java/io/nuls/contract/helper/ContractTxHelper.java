@@ -67,7 +67,7 @@ public class ContractTxHelper {
         return coinData;
     }
 
-        public CallContractData getCallContractData(byte[] senderBytes, byte[] contractAddressBytes, BigInteger value, long gasLimit, long price, String methodName, String methodDesc, String[][] args) {
+    public CallContractData getCallContractData(byte[] senderBytes, byte[] contractAddressBytes, BigInteger value, long gasLimit, long price, String methodName, String methodDesc, String[][] args) {
         CallContractData callContractData = new CallContractData();
         callContractData.setContractAddress(contractAddressBytes);
         callContractData.setSender(senderBytes);

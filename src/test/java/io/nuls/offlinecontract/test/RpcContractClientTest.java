@@ -45,21 +45,25 @@ public class RpcContractClientTest {
 
     @Test
     public void createContract()throws Throwable {
-        String contractCode=getContractCode("D:\\BlockChain-nuls\\Pocm-contract-beta\\pocmContract-version-beta1\\target\\pocmContract-test2.jar");
-        Object[] args = new Object[]{contractAddress_nrc,12000, 2, 0.5, 2, false, "tNULSeBaMtEPLXxUgyfnBt9bpb5Xv84dyJV98p", "", ""};
+      //  String contractCode=getContractCode("D:\\BlockChain-nuls\\Pocm-contract-beta\\pocmContract-version-beta1\\target\\pocmContract-test2.jar");
+     //   Object[] args = new Object[]{contractAddress_nrc,12000, 2, 0.5, 2, false, "tNULSeBaMtEPLXxUgyfnBt9bpb5Xv84dyJV98p", "", ""};
+       String contractCode= getContractCode();
+      //  String remark = "POCM contract test - POCM_共识合约";
+       Object[] args = new Object[]{"pocManager", "POCM", 100000000, 8, 5000, 5, 200, 5, true, "tNULSeBaMtEPLXxUgyfnBt9bpb5Xv84dyJV98p", "", "", "", ""};
         Map result=memberClient.invoke("createContract",new Object[]{chainId,assetChainId,assetId,sender,password,contractCode,alias,args,gasLimit,price,remark},Map.class);
         System.out.println(result);
     }
 
     @Test
     public void getContractConstructor()throws Throwable {
-        String contractCode=getContractCode("D:\\BlockChain-nuls\\Pocm-contract-beta\\pocmContract-version-beta1\\target\\pocmContract-test2.jar");
-        System.out.println(contractCode);
+       // String contractCode=getContractCode("D:\\BlockChain-nuls\\Pocm-contract-beta\\pocmContract-version-beta1\\target\\pocmContract-test2.jar");
+        String contractCode= getContractCode();
         BigInteger value= BigInteger.ZERO;
         Object[] args=new Object[]{};
         Map result=memberClient.invoke("getContractConstructor",new Object[]{chainId,contractCode},Map.class);
         System.out.println(result);
     }
+
     @Test
     public void getContract()throws Throwable {
         ContractInfo result=memberClient.invoke("getContract",new Object[]{chainId,contractAddress}, ContractInfo.class);
@@ -108,6 +112,19 @@ public class RpcContractClientTest {
     public void deleteContract()throws Throwable {
         Map result=memberClient.invoke("deleteContract",new Object[]{chainId,assetChainId,assetId,sender,password,contractAddress,remark},Map.class);
         System.out.println(result);
+    }
+
+    private String getContractCode(){
+        String hexEncode="";
+        try {
+            InputStream jarFile = new FileInputStream(RpcContractClientTest.class.getResource("/pocmContract-test.jar").getFile());
+            byte[] contractCode= IOUtils.toByteArray(jarFile);
+            hexEncode= Hex.encodeHexString(contractCode);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(hexEncode);
+        return hexEncode;
     }
 
     private String getContractCode(String sourcePath){
