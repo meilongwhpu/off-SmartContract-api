@@ -2,6 +2,7 @@ package io.nuls.contract.utils;
 
 import com.google.common.io.Resources;
 import io.nuls.contract.constant.ToolsConstant;
+import io.nuls.core.log.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,6 +91,7 @@ public class I18nUtils {
                     }
                 } else {
                     URL url = c.getProtectionDomain().getCodeSource().getLocation();
+                    Log.info( "url.getFile=" +  url.getFile());
                     if (url.getPath().endsWith(".jar")) {
                         try {
                             JarFile jarFile = new JarFile(url.getFile());
@@ -110,13 +112,43 @@ public class I18nUtils {
                                         ALL_MAPPING.put(key, prop);
                                     }
                                 }
-
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                    } else {
-                        logger.error("unSupport loadLanguage!");
+                    }else {
+                        String jarPath=url.getPath().substring(0,url.getPath().indexOf("!"));
+                        URL newUrl=new URL(jarPath);
+                        Log.info( "newUrl.getFile=" + newUrl.getPath());
+                        if(newUrl.getPath().endsWith(".jar")){
+                            //springboot jar包的资源加载
+                            try {
+                                JarFile jarFile = new JarFile(newUrl.getFile());
+                                Enumeration<JarEntry> entrys = jarFile.entries();
+                                while (entrys.hasMoreElements()) {
+                                    JarEntry jar = entrys.nextElement();
+                                    if(jar.getName().indexOf("languages" + "/")>0&&jar.getName().endsWith(".properties")){
+                                        Log.info(jar.getName());
+                                        InputStream in = I18nUtils.class.getClassLoader().getResourceAsStream(jar.getName());
+                                        Properties prop = new Properties();
+                                        prop.load(in);
+                                        String key = jar.getName().replace(".properties", "");
+                                        key = key.replace("BOOT-INF/classes/"+folder + "/", "");
+                                        Log.info("key={}", key);
+                                        if (ALL_MAPPING.containsKey(key)) {
+                                            ALL_MAPPING.get(key).putAll(prop);
+                                        } else {
+                                            ALL_MAPPING.put(key, prop);
+                                        }
+                                    }
+                                }
+                            } catch (Exception e) {
+                                Log.error(e.getMessage());
+                            }
+                        } else {
+                            logger.error("unSupport loadLanguage!");
+                        }
+
                     }
                 }
             }

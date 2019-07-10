@@ -12,7 +12,5 @@ public class ContractApplication {
         springApplication.addListeners(new ApplicationStartup());
         springApplication.run(args);
 
-     //   SpringApplication.run(ContractApplication.class, args);
     }
-
 }
