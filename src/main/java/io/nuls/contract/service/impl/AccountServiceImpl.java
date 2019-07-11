@@ -19,15 +19,18 @@ import io.nuls.core.crypto.ECKey;
 import io.nuls.core.crypto.HexUtil;
 import io.nuls.core.exception.CryptoException;
 import io.nuls.core.exception.NulsException;
+import io.nuls.core.exception.NulsRuntimeException;
 import io.nuls.core.log.Log;
 import io.nuls.core.model.FormatValidUtils;
 import io.nuls.core.model.StringUtils;
+import io.nuls.core.parse.JSONUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -66,6 +69,35 @@ public class AccountServiceImpl implements AccountService {
             locker.unlock();
         }
     }
+
+    @Override
+    public boolean removeAccount(int chainId, String address, String password) throws NulsException {
+        //check params
+        if (!AddressTool.validAddress(chainId, address)) {
+            throw new NulsRuntimeException(RpcErrorCode.ADDRESS_ERROR);
+        }
+        //Check whether the account exists
+        byte[] addressBytes = AddressTool.getAddress(address);
+        AccountPo accountPo=accountStorageService.getAccount(addressBytes);
+        if (accountPo == null) {
+            throw new NulsRuntimeException(RpcErrorCode.ACCOUNT_NOT_EXIST);
+        }
+        Account account=accountPo.toAccount();
+        //The account is encrypted, verify password
+        if (!account.validatePassword(password)) {
+            throw new NulsRuntimeException(RpcErrorCode.PASSWORD_IS_WRONG);
+        }
+        boolean result;
+        try {
+            //Delete the account from the database
+            result = accountStorageService.removeAccount(account.getAddress());
+        } catch (Exception e) {
+            Log.error(e);
+            throw new NulsRuntimeException(RpcErrorCode.DB_DELETE_ERROR);
+        }
+        return result;
+    }
+
 
     @Override
     public Account getAccount(int chainId, String address) throws NulsException {

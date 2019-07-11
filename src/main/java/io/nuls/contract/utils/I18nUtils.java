@@ -78,26 +78,37 @@ public class I18nUtils {
                 File folderFile = new File(furl.getPath());
                 logger.info("furl.getPath()=" + furl.getPath());
                 if (null != folderFile && null != folderFile.listFiles()) {
-                    for (File file : folderFile.listFiles()) {
-                        InputStream is = new FileInputStream(file);
-                        Properties prop = new Properties();
-                        prop.load(new InputStreamReader(is, ToolsConstant.DEFAULT_ENCODING));
-                        String key = file.getName().replace(".properties", "");
-                        if (ALL_MAPPING.containsKey(key)) {
-                            ALL_MAPPING.get(key).putAll(prop);
-                        } else {
-                            ALL_MAPPING.put(key, prop);
+                    try {
+                        for (File file : folderFile.listFiles()) {
+                            Log.info("--------4----------" + file.getName());
+                            InputStream is = new FileInputStream(file);
+                            Properties prop = new Properties();
+                            prop.load(new InputStreamReader(is, ToolsConstant.DEFAULT_ENCODING));
+                            String key = file.getName().replace(".properties", "");
+                            if (ALL_MAPPING.containsKey(key)) {
+                                ALL_MAPPING.get(key).putAll(prop);
+                            } else {
+                                ALL_MAPPING.put(key, prop);
+                            }
                         }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
                 } else {
                     URL url = c.getProtectionDomain().getCodeSource().getLocation();
-                    Log.info( "url.getFile=" +  url.getFile());
+                    Log.info("--------1----------");
+                    Log.info( "url.getFile=" +  url.getFile()+" -----  "+url.getPath());
+                    Log.info("--------2---------");
+                    Log.info( "url.getPath()=" +  url.getPath());
+                    Log.info("--------3---------");
                     if (url.getPath().endsWith(".jar")) {
+                        Log.info( "url.getPath()=" +  url.getPath());
                         try {
                             JarFile jarFile = new JarFile(url.getFile());
                             Enumeration<JarEntry> entrys = jarFile.entries();
                             while (entrys.hasMoreElements()) {
                                 JarEntry jar = entrys.nextElement();
+                                Log.info( "jar.getName()=" +  jar.getName());
                                 if (jar.getName().indexOf(folder + "/") == 0 && jar.getName().length() > (folder + "/").length()) {
                                     logger.info(jar.getName());
                                     InputStream in = I18nUtils.class.getClassLoader().getResourceAsStream(jar.getName());
@@ -117,7 +128,11 @@ public class I18nUtils {
                             e.printStackTrace();
                         }
                     }else {
-                        String jarPath=url.getPath().substring(0,url.getPath().indexOf("!"));
+                        String jarPath=url.getPath();
+                        Log.info( "jarPath=" +  jarPath);
+                        if(url.getPath().indexOf("!")>0){
+                            jarPath=url.getPath().substring(0,url.getPath().indexOf("!"));
+                        }
                         URL newUrl=new URL(jarPath);
                         Log.info( "newUrl.getFile=" + newUrl.getPath());
                         if(newUrl.getPath().endsWith(".jar")){

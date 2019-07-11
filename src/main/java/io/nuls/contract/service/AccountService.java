@@ -12,6 +12,8 @@ public interface AccountService {
 
     public Account createAccount(int chainId,String password) throws NulsException;
 
+    public boolean removeAccount(int chainId, String address, String password) throws NulsException;
+
     public Account getAccount(int chainId, String address) throws NulsException;
 
     public List<Account> getAccountList(int chainId);

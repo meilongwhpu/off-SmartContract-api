@@ -14,6 +14,7 @@ public interface OfflineContractResource {
 
     public Map createAccount(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "password")String password);
 
+    public boolean deleteAccount(@JsonRpcParam(value = "chainId")int chainId,@JsonRpcParam(value = "address")String address, @JsonRpcParam(value = "password")String password);
     public AccountInfo getAccount(@JsonRpcParam(value = "chainId")int chainId,@JsonRpcParam(value = "assetChainId")int assetChainId, @JsonRpcParam(value = "assetId")int assetId, @JsonRpcParam(value = "address")String address);
 
     public Page<String> getAccountList(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "pageNumber")int pageNumber, @JsonRpcParam(value = "pageSize")int pageSize);

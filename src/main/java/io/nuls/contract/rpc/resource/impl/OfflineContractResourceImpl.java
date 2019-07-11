@@ -81,6 +81,24 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
+    public boolean deleteAccount(int chainId, String address, String password) {
+        boolean result=false;
+        if (address == null) {
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"address");
+        }
+        if (!AddressTool.validAddress(chainId, address)) {
+            throw new NulsRuntimeException(RpcErrorCode.ADDRESS_ERROR);
+        }
+        try {
+             result=accountService.removeAccount(chainId,address,password);
+        } catch (NulsException e) {
+            Log.error(e);
+            throw new NulsRuntimeException(e.getErrorCode());
+        }
+        return result;
+    }
+
+    @Override
     public AccountInfo getAccount(int chainId,int assetChainId, int assetId, String address) {
         if (address == null) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"address");
@@ -376,6 +394,9 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
     @Override
     public ContractInfo getContract(int chainId,String contractAddress) {
+        if (!AddressTool.validAddress(chainId, contractAddress)) {
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"contractAddress");
+        }
         try {
             ContractInfo contractInfo=contractService.getContract(chainId,contractAddress);
             if(contractInfo!=null){
