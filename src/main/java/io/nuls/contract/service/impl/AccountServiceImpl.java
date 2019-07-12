@@ -7,9 +7,11 @@ import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.base.signture.SignatureUtil;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountKeyStore;
+import io.nuls.contract.account.model.bo.AccountModeInfo;
 import io.nuls.contract.account.model.po.AccountPo;
 import io.nuls.contract.account.storage.AccountStorageService;
 import io.nuls.contract.account.utils.AccountTool;
+import io.nuls.contract.model.AccountInfo;
 import io.nuls.contract.model.BalanceInfo;
 import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.contract.service.AccountKeyStoreService;
@@ -114,19 +116,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getAccountList(int chainId) {
-        List<Account> accountList = new ArrayList<>();
+    public List<AccountModeInfo> getAccountList(int chainId) throws NulsException  {
+        List<AccountModeInfo> accountList = new ArrayList<>();
         List<AccountPo> accountPoList=accountStorageService.getAccountList();
         if (null == accountPoList || accountPoList.isEmpty()) {
             return accountList;
         }
         for (AccountPo po : accountPoList) {
             if(chainId==po.getChainId()){
-                Account account = po.toAccount();
-                accountList.add(account);
+                AccountModeInfo accountModeInfo=po.toAccountModeInfo();
+                AccountInfo accountInfo =this.getAccountForChain(chainId,po.getAddress());
+                accountModeInfo.setAlias(accountInfo.getAlias());
+                accountModeInfo.setBalance(accountInfo.getBalance());
+                accountModeInfo.setTotalBalance(accountInfo.getTotalBalance());
+                accountList.add(accountModeInfo);
             }
         }
-        Collections.sort(accountList, (Account o1, Account o2) -> (o2.getCreateTime().compareTo(o1.getCreateTime())));
+        Collections.sort(accountList, (AccountModeInfo o1, AccountModeInfo o2) -> (o2.getCreateTime().compareTo(o1.getCreateTime())));
         return accountList;
     }
 
@@ -136,12 +142,21 @@ public class AccountServiceImpl implements AccountService {
         BalanceInfo balanceInfo=null;
         try {
             balanceInfo= httpClient.getRpcHttpClient().invoke("getAccountBalance",new Object[]{chainId,assetChainId,assetId,address},BalanceInfo.class);
-        } catch (JsonRpcClientException e) {
-            throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR,e.getMessage());
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR,e.getMessage());
         }
         return balanceInfo;
+    }
+
+    @Override
+    public AccountInfo getAccountForChain(int chainId, String address) throws NulsException {
+        AccountInfo accountInfo=null;
+        try {
+            accountInfo= httpClient.getRpcHttpClient().invoke("getAccount",new Object[]{chainId,address}, AccountInfo.class);
+        }catch (Throwable e) {
+            throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR,e.getMessage());
+        }
+        return accountInfo;
     }
 
     @Override

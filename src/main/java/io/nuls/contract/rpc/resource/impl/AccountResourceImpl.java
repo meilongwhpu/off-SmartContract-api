@@ -2,8 +2,7 @@ package io.nuls.contract.rpc.resource.impl;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
-import io.nuls.contract.account.model.bo.AccountInfo;
-import io.nuls.contract.model.BalanceInfo;
+import io.nuls.contract.account.model.bo.AccountModeInfo;
 import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.contract.model.RpcResultError;
 import io.nuls.contract.rpc.resource.AccountResource;
@@ -57,8 +56,8 @@ public class AccountResourceImpl implements AccountResource {
     }
 
     @Override
-    public AccountInfo test2(@JsonRpcParam(value = "id") long id) {
-        AccountInfo accountInfo= new AccountInfo();
+    public AccountModeInfo test2(@JsonRpcParam(value = "id") long id) {
+        AccountModeInfo accountInfo= new AccountModeInfo();
         accountInfo.setChainId(2);
         accountInfo.setAddress("12312312312312");
         return accountInfo;

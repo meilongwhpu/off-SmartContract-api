@@ -10,10 +10,11 @@ import io.nuls.base.data.NulsHash;
 import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.base.signture.TransactionSignature;
 import io.nuls.contract.account.model.bo.Account;
-import io.nuls.contract.account.model.bo.AccountInfo;
+import io.nuls.contract.account.model.bo.AccountModeInfo;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
 import io.nuls.contract.account.utils.AccountTool;
 import io.nuls.contract.helper.ContractTxHelper;
+import io.nuls.contract.model.AccountInfo;
 import io.nuls.contract.model.BalanceInfo;
 import io.nuls.contract.model.ContractInfo;
 import io.nuls.contract.model.RpcErrorCode;
@@ -99,7 +100,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public AccountInfo getAccount(int chainId,int assetChainId, int assetId, String address) {
+    public AccountModeInfo getAccount(int chainId, int assetChainId, int assetId, String address) {
         if (address == null) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"address");
         }
@@ -116,12 +117,13 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
         if(account!=null){
             try {
-                AccountInfo accountInfo= new AccountInfo();
+                AccountModeInfo accountInfo= new AccountModeInfo();
                 accountInfo.setChainId(account.getChainId());
                 accountInfo.setAddress(account.getAddress().toString());
-                BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetChainId, assetId,address);
-                accountInfo.setBalance(balanceInfo.getBalance());
-                accountInfo.setTotalBalance(balanceInfo.getTotalBalance());
+                AccountInfo accountForChain =accountService.getAccountForChain(chainId,address);
+                accountInfo.setBalance(accountForChain.getBalance());
+                accountInfo.setTotalBalance(accountForChain.getTotalBalance());
+                accountInfo.setAlias(accountForChain.getAlias());
                 return accountInfo;
             } catch (NulsException e) {
                 Log.error(e);
@@ -134,8 +136,8 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public Page<String> getAccountList(int chainId, int pageNumber, int pageSize) {
-        Page<String> resultPage;
+    public Page<AccountModeInfo> getAccountList(int chainId, int pageNumber, int pageSize) {
+        Page<AccountModeInfo> resultPage;
         if (pageNumber < 1) {
             throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"pageNumber");
         }
@@ -143,10 +145,10 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
             throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"pageSize");
         }
 
-        List<Account> accountList= null;
+        List<AccountModeInfo> accountList= null;
         try {
             accountList = accountService.getAccountList(chainId);
-        } catch (NulsRuntimeException e) {
+        } catch (NulsException e) {
             Log.error(e);
             throw new NulsRuntimeException(e.getErrorCode());
         }
@@ -156,7 +158,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
         }
 
         //根据分页参数返回账户地址列表 Returns the account address list according to paging parameters
-        Page<String> page = new Page<String>(pageNumber, pageSize);
+        Page<AccountModeInfo> page = new Page<AccountModeInfo>(pageNumber, pageSize);
         page.setTotal(totalSize);
         int start = (pageNumber - 1) * pageSize;
         if (start >= totalSize) {
@@ -169,12 +171,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
         }
         accountList = accountList.subList(start, end);
         resultPage = new Page<>(page);
-        List<String> addressList = new ArrayList<>();
-        for(Account account :accountList){
-            addressList.add(account.getAddress().getBase58());
-        }
-        resultPage.setList(addressList);
-
+        resultPage.setList(accountList);
         return resultPage;
     }
 

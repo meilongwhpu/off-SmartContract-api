@@ -2,7 +2,7 @@ package io.nuls.contract.rpc.resource;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
-import io.nuls.contract.account.model.bo.AccountInfo;
+import io.nuls.contract.account.model.bo.AccountModeInfo;
 import io.nuls.contract.model.ContractInfo;
 import io.nuls.core.basic.Page;
 
@@ -15,9 +15,9 @@ public interface OfflineContractResource {
     public Map createAccount(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "password")String password);
 
     public boolean deleteAccount(@JsonRpcParam(value = "chainId")int chainId,@JsonRpcParam(value = "address")String address, @JsonRpcParam(value = "password")String password);
-    public AccountInfo getAccount(@JsonRpcParam(value = "chainId")int chainId,@JsonRpcParam(value = "assetChainId")int assetChainId, @JsonRpcParam(value = "assetId")int assetId, @JsonRpcParam(value = "address")String address);
+    public AccountModeInfo getAccount(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "assetChainId")int assetChainId, @JsonRpcParam(value = "assetId")int assetId, @JsonRpcParam(value = "address")String address);
 
-    public Page<String> getAccountList(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "pageNumber")int pageNumber, @JsonRpcParam(value = "pageSize")int pageSize);
+    public Page<AccountModeInfo> getAccountList(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "pageNumber")int pageNumber, @JsonRpcParam(value = "pageSize")int pageSize);
 
     public Map exportAccountKeyStore(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "address")String address, @JsonRpcParam(value = "password")String password,@JsonRpcParam(value = "filePath")String filePath);
 
