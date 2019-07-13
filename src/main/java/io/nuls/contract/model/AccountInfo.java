@@ -33,11 +33,21 @@ public class AccountInfo implements Serializable {
 
     private List<String> tokens;
 
+    private String symbol;
+
     //是否是根据最新区块的交易新创建的账户，只为业务使用，不存储该字段
     @JsonIgnore
     private boolean isNew;
 
     public AccountInfo() {
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
 
     public String getAddress() {
