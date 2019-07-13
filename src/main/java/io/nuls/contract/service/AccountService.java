@@ -3,6 +3,8 @@ package io.nuls.contract.service;
 import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountKeyStore;
+import io.nuls.contract.account.model.bo.AccountModeInfo;
+import io.nuls.contract.model.AccountInfo;
 import io.nuls.contract.model.BalanceInfo;
 import io.nuls.core.exception.NulsException;
 
@@ -12,11 +14,15 @@ public interface AccountService {
 
     public Account createAccount(int chainId,String password) throws NulsException;
 
+    public boolean removeAccount(int chainId, String address, String password) throws NulsException;
+
     public Account getAccount(int chainId, String address) throws NulsException;
 
-    public List<Account> getAccountList(int chainId);
+    public List<AccountModeInfo> getAccountList(int chainId) throws NulsException ;
 
     public BalanceInfo getAccountBalance(int chainId,int assetChainId, int assetId, String address) throws NulsException;
+
+    public AccountInfo getAccountForChain(int chainId, String address) throws NulsException;
 
     /**
      * 数据摘要签名

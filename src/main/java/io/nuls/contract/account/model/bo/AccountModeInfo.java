@@ -1,18 +1,23 @@
 package io.nuls.contract.account.model.bo;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class AccountInfo {
+public class AccountModeInfo implements Serializable {
 
     private int chainId;
 
     private String address;
 
+    private String alias;
+
     private BigInteger balance;
 
     private BigInteger totalBalance;
 
-    public AccountInfo() {
+    private Long createTime;
+
+    public AccountModeInfo() {
     }
 
     public int getChainId() {
@@ -44,6 +49,22 @@ public class AccountInfo {
 
     public void setTotalBalance(BigInteger totalBalance) {
         this.totalBalance = totalBalance;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
     }
 
     @Override

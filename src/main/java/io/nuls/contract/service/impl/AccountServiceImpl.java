@@ -7,9 +7,11 @@ import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.base.signture.SignatureUtil;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountKeyStore;
+import io.nuls.contract.account.model.bo.AccountModeInfo;
 import io.nuls.contract.account.model.po.AccountPo;
 import io.nuls.contract.account.storage.AccountStorageService;
 import io.nuls.contract.account.utils.AccountTool;
+import io.nuls.contract.model.AccountInfo;
 import io.nuls.contract.model.BalanceInfo;
 import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.contract.service.AccountKeyStoreService;
@@ -19,15 +21,18 @@ import io.nuls.core.crypto.ECKey;
 import io.nuls.core.crypto.HexUtil;
 import io.nuls.core.exception.CryptoException;
 import io.nuls.core.exception.NulsException;
+import io.nuls.core.exception.NulsRuntimeException;
 import io.nuls.core.log.Log;
 import io.nuls.core.model.FormatValidUtils;
 import io.nuls.core.model.StringUtils;
+import io.nuls.core.parse.JSONUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -68,6 +73,35 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public boolean removeAccount(int chainId, String address, String password) throws NulsException {
+        //check params
+        if (!AddressTool.validAddress(chainId, address)) {
+            throw new NulsRuntimeException(RpcErrorCode.ADDRESS_ERROR);
+        }
+        //Check whether the account exists
+        byte[] addressBytes = AddressTool.getAddress(address);
+        AccountPo accountPo=accountStorageService.getAccount(addressBytes);
+        if (accountPo == null) {
+            throw new NulsRuntimeException(RpcErrorCode.ACCOUNT_NOT_EXIST);
+        }
+        Account account=accountPo.toAccount();
+        //The account is encrypted, verify password
+        if (!account.validatePassword(password)) {
+            throw new NulsRuntimeException(RpcErrorCode.PASSWORD_IS_WRONG);
+        }
+        boolean result;
+        try {
+            //Delete the account from the database
+            result = accountStorageService.removeAccount(account.getAddress());
+        } catch (Exception e) {
+            Log.error(e);
+            throw new NulsRuntimeException(RpcErrorCode.DB_DELETE_ERROR);
+        }
+        return result;
+    }
+
+
+    @Override
     public Account getAccount(int chainId, String address) throws NulsException {
         if (!AddressTool.validAddress(chainId, address)) {
             throw new NulsException(RpcErrorCode.ADDRESS_ERROR);
@@ -82,19 +116,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getAccountList(int chainId) {
-        List<Account> accountList = new ArrayList<>();
+    public List<AccountModeInfo> getAccountList(int chainId) throws NulsException  {
+        List<AccountModeInfo> accountList = new ArrayList<>();
         List<AccountPo> accountPoList=accountStorageService.getAccountList();
         if (null == accountPoList || accountPoList.isEmpty()) {
             return accountList;
         }
         for (AccountPo po : accountPoList) {
             if(chainId==po.getChainId()){
-                Account account = po.toAccount();
-                accountList.add(account);
+                AccountModeInfo accountModeInfo=po.toAccountModeInfo();
+                AccountInfo accountInfo =this.getAccountForChain(chainId,po.getAddress());
+                accountModeInfo.setAlias(accountInfo.getAlias());
+                accountModeInfo.setBalance(accountInfo.getBalance());
+                accountModeInfo.setTotalBalance(accountInfo.getTotalBalance());
+                accountList.add(accountModeInfo);
             }
         }
-        Collections.sort(accountList, (Account o1, Account o2) -> (o2.getCreateTime().compareTo(o1.getCreateTime())));
+        Collections.sort(accountList, (AccountModeInfo o1, AccountModeInfo o2) -> (o2.getCreateTime().compareTo(o1.getCreateTime())));
         return accountList;
     }
 
@@ -104,12 +142,21 @@ public class AccountServiceImpl implements AccountService {
         BalanceInfo balanceInfo=null;
         try {
             balanceInfo= httpClient.getRpcHttpClient().invoke("getAccountBalance",new Object[]{chainId,assetChainId,assetId,address},BalanceInfo.class);
-        } catch (JsonRpcClientException e) {
-            throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR,e.getMessage());
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR,e.getMessage());
         }
         return balanceInfo;
+    }
+
+    @Override
+    public AccountInfo getAccountForChain(int chainId, String address) throws NulsException {
+        AccountInfo accountInfo=null;
+        try {
+            accountInfo= httpClient.getRpcHttpClient().invoke("getAccount",new Object[]{chainId,address}, AccountInfo.class);
+        }catch (Throwable e) {
+            throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR,e.getMessage());
+        }
+        return accountInfo;
     }
 
     @Override

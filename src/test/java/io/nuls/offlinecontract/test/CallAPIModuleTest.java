@@ -2,7 +2,7 @@ package io.nuls.offlinecontract.test;
 
 import com.googlecode.jsonrpc4j.JsonRpcClientException;
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
-import io.nuls.contract.account.model.bo.AccountInfo;
+import io.nuls.contract.account.model.bo.AccountModeInfo;
 
 import java.net.URL;
 
@@ -28,7 +28,7 @@ public class CallAPIModuleTest {
     public void testRPC()throws Throwable {
         try{
 
-        AccountInfo result = memberClient.invoke("getAccount", new Object[] {2,"tNULSeBaMnrs6JKrCy6TQdzYJZkMZJDng7QAsD"}, AccountInfo.class);
+        AccountModeInfo result = memberClient.invoke("getAccount", new Object[] {2,"tNULSeBaMnrs6JKrCy6TQdzYJZkMZJDng7QAsD"}, AccountModeInfo.class);
 
        // BalanceInfo result2 = memberClient.invoke("getAccountBalance", new Object[] {2,1,"tNULSeBaMnrs6JKrCy6TQdzYJZkMZJDng7QAsD"}, BalanceInfo.class);
     //    BalanceInfo result3 = memberClient.invoke("getAccountBalance", new Object[] {2,1,"tNULSeBaMnrs6JKrCy6TQdzYJZkMZJDng7QAsD"}, BalanceInfo.class);

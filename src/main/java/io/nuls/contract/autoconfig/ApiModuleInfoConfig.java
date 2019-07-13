@@ -4,6 +4,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+
 @Component
 public class ApiModuleInfoConfig  implements InitializingBean {
 
@@ -16,13 +18,13 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     @Value("${language}")
     private String language;
 
-    @Value("${dataPath}")
+    @Value("${dataPath:default}")
     private String dataPath;
 
-    @Value("${keystorePath}")
+    @Value("${keystorePath:default}")
     private String keystorePath;
 
-    @Value("${log.path}")
+    @Value("${log.path:default}")
     private String logPath;
 
     @Value("${log.level}")
@@ -54,6 +56,10 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     }
 
     public String getLogPath() {
+        //若不peoperties文件不配置此参数，则设置缺省值
+        if(logPath.equals("default")){
+            logPath= System.getProperty("user.home")+ File.separator+"logs";
+        }
         return logPath;
     }
 
@@ -91,6 +97,10 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     }
 
     public String getDataPath() {
+        //若不peoperties文件不配置此参数，则设置缺省值
+        if( dataPath.equals("default")){
+            dataPath= System.getProperty("user.home")+ File.separator+"data";
+        }
         return dataPath;
     }
 
@@ -99,6 +109,10 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     }
 
     public String getKeystorePath() {
+        //若不peoperties文件不配置此参数，则设置缺省值
+        if(keystorePath.equals("default")){
+            keystorePath= System.getProperty("user.home")+ File.separator+"keystore"+ File.separator+"backup";
+        }
         return keystorePath;
     }
 
