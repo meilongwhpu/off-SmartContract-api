@@ -1,4 +1,4 @@
-package io.nuls.contract.model;
+package io.nuls.contract.account.model.bo;
 
 import java.math.BigInteger;
 

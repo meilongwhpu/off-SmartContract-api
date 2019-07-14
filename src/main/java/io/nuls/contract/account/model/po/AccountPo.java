@@ -5,7 +5,7 @@ import io.nuls.base.basic.NulsOutputStreamBuffer;
 import io.nuls.base.data.Address;
 import io.nuls.base.data.BaseNulsData;
 import io.nuls.contract.account.model.bo.Account;
-import io.nuls.contract.account.model.bo.AccountModeInfo;
+import io.nuls.contract.account.model.vo.AccountModeInfo;
 import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.core.crypto.AESEncrypt;
 import io.nuls.core.crypto.ECKey;

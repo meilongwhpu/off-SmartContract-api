@@ -1,6 +1,6 @@
 package io.nuls.contract.service;
 
-import io.nuls.contract.model.ContractInfo;
+import io.nuls.contract.account.model.bo.ContractInfo;
 import io.nuls.core.exception.NulsException;
 
 import java.math.BigInteger;

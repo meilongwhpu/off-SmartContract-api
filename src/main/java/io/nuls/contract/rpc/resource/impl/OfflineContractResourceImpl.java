@@ -10,13 +10,14 @@ import io.nuls.base.data.NulsHash;
 import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.base.signture.TransactionSignature;
 import io.nuls.contract.account.model.bo.Account;
-import io.nuls.contract.account.model.bo.AccountModeInfo;
+import io.nuls.contract.account.model.bo.AccountInfo;
+import io.nuls.contract.account.model.bo.BalanceInfo;
+import io.nuls.contract.account.model.bo.ContractInfo;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
+import io.nuls.contract.account.model.vo.AccountModeInfo;
+import io.nuls.contract.account.model.vo.ContractModeInfo;
 import io.nuls.contract.account.utils.AccountTool;
 import io.nuls.contract.helper.ContractTxHelper;
-import io.nuls.contract.model.AccountInfo;
-import io.nuls.contract.model.BalanceInfo;
-import io.nuls.contract.model.ContractInfo;
 import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.contract.model.tx.CallContractTransaction;
 import io.nuls.contract.model.tx.CreateContractTransaction;
@@ -390,14 +391,14 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public ContractInfo getContract(int chainId,String contractAddress) {
+    public ContractModeInfo getContract(int chainId, String contractAddress) {
         if (!AddressTool.validAddress(chainId, contractAddress)) {
             throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"contractAddress");
         }
         try {
             ContractInfo contractInfo=contractService.getContract(chainId,contractAddress);
             if(contractInfo!=null){
-                return contractInfo;
+                return contractInfo.toContractModeInfo();
             }else {
                 throw new NulsRuntimeException(RpcErrorCode.GET_CONTRACT_INFO_FAILED);
             }

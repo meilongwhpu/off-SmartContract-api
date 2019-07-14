@@ -2,10 +2,10 @@ package io.nuls.contract.rpc.resource.impl;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
-import io.nuls.contract.account.model.bo.AccountModeInfo;
+import io.nuls.contract.account.model.vo.AccountModeInfo;
 import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.contract.model.RpcResultError;
-import io.nuls.contract.rpc.resource.AccountResource;
+import io.nuls.contract.rpc.resource.TestResource;
 import io.nuls.contract.service.AccountKeyStoreService;
 import io.nuls.contract.service.AccountService;
 import io.nuls.core.exception.NulsException;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Service
 @AutoJsonRpcServiceImpl
-public class AccountResourceImpl implements AccountResource {
+public class TestResourceImpl implements TestResource {
 
     @Autowired
     private AccountService accountService;
@@ -38,11 +38,6 @@ public class AccountResourceImpl implements AccountResource {
             }
         try{
             throw  new NulsException(RpcErrorCode.PARAMETER_ERROR);
-        /*    BalanceInfo info= accountService.getAccountBalance(2,1,"tNULSeBaMnrs6JKrCy6TQdzYJZkMZJDng7QAsD");
-            System.out.println(info.toString());
-            Log.info("input : "+id);
-            map.put("address",id+"-test");
-            return map;*/
         }catch (Throwable e){
             if(e.getClass().equals(NulsException.class)){
                 NulsException exception=(NulsException)e;

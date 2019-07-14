@@ -291,30 +291,6 @@ public class SignatureUtil {
     }
 
     /**
-     * 生成交易的锁定脚本
-     *
-     * @param tx 交易
-     */
-    //TODO (修改Transaction引起的编译错误)
-/*    public static boolean createOutputScript(Transaction tx) {
-        CoinData coinData = tx.getCoinData();
-        //生成锁定脚本
-        for (Coin coin : coinData.getTo()) {
-            Script scriptPubkey = null;
-            byte[] toAddr = coin.getAddress();
-            if (toAddr[2] == BaseConstant.DEFAULT_ADDRESS_TYPE) {
-                scriptPubkey = ScriptUtil.createP2PKHOutputScript(toAddr);
-            } else if (toAddr[2] == BaseConstant.P2SH_ADDRESS_TYPE) {
-                scriptPubkey = ScriptUtil.createP2SHOutputScript(toAddr);
-            }
-            if (scriptPubkey != null && scriptPubkey.getProgram().length > 0) {
-                coin.setOwner(scriptPubkey.getProgram());
-            }
-        }
-        return true;
-    }*/
-
-    /**
      * 生成交易的脚本（多重签名，P2SH）
      *
      * @param signtures 签名列表

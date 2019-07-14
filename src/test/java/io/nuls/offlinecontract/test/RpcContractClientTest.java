@@ -1,8 +1,7 @@
 package io.nuls.offlinecontract.test;
 
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
-import io.nuls.contract.model.ContractInfo;
-import io.nuls.contract.model.RpcResult;
+import io.nuls.contract.account.model.bo.ContractInfo;
 import io.nuls.core.parse.JSONUtils;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;

@@ -1,7 +1,7 @@
 package io.nuls.contract.service.impl;
 
-import io.nuls.contract.model.ContractInfo;
-import io.nuls.contract.model.ProgramMethodArg;
+import io.nuls.contract.account.model.bo.ContractInfo;
+import io.nuls.contract.model.ContractMethodArg;
 import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.contract.service.ContractService;
 import io.nuls.core.exception.NulsException;
@@ -58,10 +58,10 @@ public class ContractServiceImpl implements ContractService {
             boolean isNrc20= (boolean) result.get("nrc20");
             List<Map> args = (List<Map>) constructor.get("args");
             int size = args.size();
-            ProgramMethodArg[] argTypes = new ProgramMethodArg[size];
+            ContractMethodArg[] argTypes = new ContractMethodArg[size];
             int i = 0;
             for(Map arg : args) {
-                ProgramMethodArg methodArg=new ProgramMethodArg();
+                ContractMethodArg methodArg=new ContractMethodArg();
                 methodArg.setName(arg.get("name").toString());
                 methodArg.setType(arg.get("type").toString());
                 methodArg.setRequired((Boolean) arg.get("required"));

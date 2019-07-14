@@ -1,6 +1,9 @@
-package io.nuls.contract.model;
+package io.nuls.contract.account.model.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.nuls.contract.account.model.vo.ContractModeInfo;
+import io.nuls.contract.model.ContractMethod;
+import io.nuls.contract.model.ContractResultInfo;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -56,9 +59,37 @@ public class ContractInfo {
 
     private ContractResultInfo resultInfo;
 
-
     @JsonIgnore
     private boolean isNew;
+
+    public ContractModeInfo toContractModeInfo(){
+        ContractModeInfo contractModeInfo =new ContractModeInfo();
+        contractModeInfo.setAlias(this.getAlias());
+        contractModeInfo.setBalance(this.getBalance());
+        contractModeInfo.setBlockHeight(this.getBlockHeight());
+        contractModeInfo.setCertificationTime(this.getCertificationTime());
+        contractModeInfo.setContractAddress(this.getContractAddress());
+        contractModeInfo.setCreater(this.getCreater());
+        contractModeInfo.setCreateTime(this.getCreateTime());
+        contractModeInfo.setCreateTxHash(this.getCreateTxHash());
+        contractModeInfo.setDecimals(this.getDecimals());
+        contractModeInfo.setDeleteHash(this.getDeleteHash());
+        contractModeInfo.setDirectPayable(this.isDirectPayable);
+        contractModeInfo.setErrorMsg(this.getErrorMsg());
+        contractModeInfo.setMethods(this.getMethods());
+        contractModeInfo.setNrc20(this.isNrc20);
+        contractModeInfo.setOwners(this.getOwners());
+        contractModeInfo.setRemark(this.getRemark());
+        contractModeInfo.setResultInfo(this.getResultInfo());
+        contractModeInfo.setStatus(this.getStatus());
+        contractModeInfo.setSuccess(this.isSuccess());
+        contractModeInfo.setSymbol(this.getSymbol());
+        contractModeInfo.setTokenName(this.getTokenName());
+        contractModeInfo.setTotalSupply(this.getTotalSupply());
+        contractModeInfo.setTransferCount(this.getTransferCount());
+        contractModeInfo.setTxCount(this.getTxCount());
+        return contractModeInfo;
+    }
 
 
     public String getContractAddress() {

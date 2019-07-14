@@ -3,9 +3,9 @@ package io.nuls.contract.service;
 import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountKeyStore;
-import io.nuls.contract.account.model.bo.AccountModeInfo;
-import io.nuls.contract.model.AccountInfo;
-import io.nuls.contract.model.BalanceInfo;
+import io.nuls.contract.account.model.vo.AccountModeInfo;
+import io.nuls.contract.account.model.bo.AccountInfo;
+import io.nuls.contract.account.model.bo.BalanceInfo;
 import io.nuls.core.exception.NulsException;
 
 import java.util.List;

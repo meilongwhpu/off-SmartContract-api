@@ -2,7 +2,7 @@ package io.nuls.contract;
 
 import com.googlecode.jsonrpc4j.spring.JsonServiceExporter;
 import io.nuls.contract.autoconfig.ApiModuleInitTool;
-import io.nuls.contract.model.DefineErrorResolver;
+import io.nuls.contract.rpc.exception.DefineErrorResolver;
 import io.nuls.core.log.Log;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;

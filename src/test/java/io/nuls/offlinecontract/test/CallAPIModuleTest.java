@@ -2,7 +2,7 @@ package io.nuls.offlinecontract.test;
 
 import com.googlecode.jsonrpc4j.JsonRpcClientException;
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
-import io.nuls.contract.account.model.bo.AccountModeInfo;
+import io.nuls.contract.account.model.vo.AccountModeInfo;
 
 import java.net.URL;
 
