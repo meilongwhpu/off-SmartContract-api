@@ -14,8 +14,8 @@ import io.nuls.contract.account.model.bo.AccountInfo;
 import io.nuls.contract.account.model.bo.BalanceInfo;
 import io.nuls.contract.account.model.bo.ContractInfo;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
-import io.nuls.contract.account.model.vo.AccountModeInfo;
-import io.nuls.contract.account.model.vo.ContractModeInfo;
+import io.nuls.contract.account.model.vo.AccountInfoVo;
+import io.nuls.contract.account.model.vo.ContractInfoVo;
 import io.nuls.contract.account.utils.AccountTool;
 import io.nuls.contract.helper.ContractTxHelper;
 import io.nuls.contract.model.RpcErrorCode;
@@ -101,7 +101,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public AccountModeInfo getAccount(int chainId, int assetChainId, int assetId, String address) {
+    public AccountInfoVo getAccount(int chainId, int assetChainId, int assetId, String address) {
         if (address == null) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"address");
         }
@@ -118,7 +118,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
         if(account!=null){
             try {
-                AccountModeInfo accountInfo= new AccountModeInfo();
+                AccountInfoVo accountInfo= new AccountInfoVo();
                 accountInfo.setChainId(account.getChainId());
                 accountInfo.setAddress(account.getAddress().toString());
                 AccountInfo accountForChain =accountService.getAccountForChain(chainId,address);
@@ -137,8 +137,8 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public Page<AccountModeInfo> getAccountList(int chainId, int pageNumber, int pageSize) {
-        Page<AccountModeInfo> resultPage;
+    public Page<AccountInfoVo> getAccountList(int chainId, int pageNumber, int pageSize) {
+        Page<AccountInfoVo> resultPage;
         if (pageNumber < 1) {
             throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"pageNumber");
         }
@@ -146,7 +146,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
             throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"pageSize");
         }
 
-        List<AccountModeInfo> accountList= null;
+        List<AccountInfoVo> accountList= null;
         try {
             accountList = accountService.getAccountList(chainId);
         } catch (NulsException e) {
@@ -159,7 +159,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
         }
 
         //根据分页参数返回账户地址列表 Returns the account address list according to paging parameters
-        Page<AccountModeInfo> page = new Page<AccountModeInfo>(pageNumber, pageSize);
+        Page<AccountInfoVo> page = new Page<AccountInfoVo>(pageNumber, pageSize);
         page.setTotal(totalSize);
         int start = (pageNumber - 1) * pageSize;
         if (start >= totalSize) {
@@ -391,14 +391,14 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public ContractModeInfo getContract(int chainId, String contractAddress) {
+    public ContractInfoVo getContract(int chainId, String contractAddress) {
         if (!AddressTool.validAddress(chainId, contractAddress)) {
             throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"contractAddress");
         }
         try {
             ContractInfo contractInfo=contractService.getContract(chainId,contractAddress);
             if(contractInfo!=null){
-                return contractInfo.toContractModeInfo();
+                return contractInfo.toContractInfoVo();
             }else {
                 throw new NulsRuntimeException(RpcErrorCode.GET_CONTRACT_INFO_FAILED);
             }

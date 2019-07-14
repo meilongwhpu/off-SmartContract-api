@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.List;
 
-public class ContractModeInfo implements Serializable {
+public class ContractInfoVo implements Serializable {
 
     private String contractAddress;
 

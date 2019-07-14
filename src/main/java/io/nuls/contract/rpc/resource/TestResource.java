@@ -2,7 +2,7 @@ package io.nuls.contract.rpc.resource;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
-import io.nuls.contract.account.model.vo.AccountModeInfo;
+import io.nuls.contract.account.model.vo.AccountInfoVo;
 
 import java.util.Map;
 
@@ -11,6 +11,6 @@ public interface TestResource {
 
     public Map test(@JsonRpcParam(value = "id") long id);
 
-    public AccountModeInfo test2(@JsonRpcParam(value = "id") long id);
+    public AccountInfoVo test2(@JsonRpcParam(value = "id") long id);
 
 }

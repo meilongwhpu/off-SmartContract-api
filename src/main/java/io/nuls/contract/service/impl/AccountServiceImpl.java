@@ -6,7 +6,7 @@ import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.base.signture.SignatureUtil;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountKeyStore;
-import io.nuls.contract.account.model.vo.AccountModeInfo;
+import io.nuls.contract.account.model.vo.AccountInfoVo;
 import io.nuls.contract.account.model.po.AccountPo;
 import io.nuls.contract.account.storage.AccountStorageService;
 import io.nuls.contract.account.utils.AccountTool;
@@ -113,23 +113,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountModeInfo> getAccountList(int chainId) throws NulsException  {
-        List<AccountModeInfo> accountList = new ArrayList<>();
+    public List<AccountInfoVo> getAccountList(int chainId) throws NulsException  {
+        List<AccountInfoVo> accountList = new ArrayList<>();
         List<AccountPo> accountPoList=accountStorageService.getAccountList();
         if (null == accountPoList || accountPoList.isEmpty()) {
             return accountList;
         }
         for (AccountPo po : accountPoList) {
             if(chainId==po.getChainId()){
-                AccountModeInfo accountModeInfo=po.toAccountModeInfo();
+                AccountInfoVo accountInfoVo =po.toAccountInfoVo();
                 AccountInfo accountInfo =this.getAccountForChain(chainId,po.getAddress());
-                accountModeInfo.setAlias(accountInfo.getAlias());
-                accountModeInfo.setBalance(accountInfo.getBalance());
-                accountModeInfo.setTotalBalance(accountInfo.getTotalBalance());
-                accountList.add(accountModeInfo);
+                accountInfoVo.setAlias(accountInfo.getAlias());
+                accountInfoVo.setBalance(accountInfo.getBalance());
+                accountInfoVo.setTotalBalance(accountInfo.getTotalBalance());
+                accountList.add(accountInfoVo);
             }
         }
-        Collections.sort(accountList, (AccountModeInfo o1, AccountModeInfo o2) -> (o2.getCreateTime().compareTo(o1.getCreateTime())));
+        Collections.sort(accountList, (AccountInfoVo o1, AccountInfoVo o2) -> (o2.getCreateTime().compareTo(o1.getCreateTime())));
         return accountList;
     }
 

@@ -1,7 +1,7 @@
 package io.nuls.offlinecontract.test;
 
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
-import io.nuls.contract.account.model.vo.AccountModeInfo;
+import io.nuls.contract.account.model.vo.AccountInfoVo;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
 import io.nuls.core.basic.Page;
 import io.nuls.core.crypto.HexUtil;
@@ -43,7 +43,7 @@ public class RpcAccountClientTest {
 
     @Test
     public  void getAccount() throws Throwable{
-        AccountModeInfo result = memberClient.invoke("getAccount", new Object[] {chainId,assetChainId,assetId,address}, AccountModeInfo.class);
+        AccountInfoVo result = memberClient.invoke("getAccount", new Object[] {chainId,assetChainId,assetId,address}, AccountInfoVo.class);
         System.out.println(result.toString());
     }
 

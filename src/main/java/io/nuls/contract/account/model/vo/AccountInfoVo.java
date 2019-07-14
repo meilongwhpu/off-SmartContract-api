@@ -3,7 +3,7 @@ package io.nuls.contract.account.model.vo;
 import java.io.Serializable;
 import java.math.BigInteger;
 
-public class AccountModeInfo implements Serializable {
+public class AccountInfoVo implements Serializable {
 
     private int chainId;
 
@@ -17,7 +17,7 @@ public class AccountModeInfo implements Serializable {
 
     private Long createTime;
 
-    public AccountModeInfo() {
+    public AccountInfoVo() {
     }
 
     public int getChainId() {
