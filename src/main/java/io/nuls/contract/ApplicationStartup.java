@@ -3,6 +3,7 @@ package io.nuls.contract;
 import com.googlecode.jsonrpc4j.spring.JsonServiceExporter;
 import io.nuls.contract.autoconfig.ApiModuleInitTool;
 import io.nuls.contract.rpc.exception.DefineErrorResolver;
+import io.nuls.contract.web.view.WebViewBootstrap;
 import io.nuls.core.log.Log;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -23,6 +24,8 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
                 bean.setErrorResolver(DefineErrorResolver.INSTANCE);
                 bean.afterPropertiesSet();
             }
+            new Thread(new WebViewBootstrap()).start();
+            Log.info("---------- started -------------");
         } catch (Exception e) {
             e.printStackTrace();
         }
