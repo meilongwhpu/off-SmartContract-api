@@ -1,4 +1,4 @@
-package io.nuls.contract.account.model.vo;
+package io.nuls.contract.model.vo;
 
 import io.nuls.contract.model.ContractMethod;
 import io.nuls.contract.model.ContractResultInfo;

@@ -1,7 +1,7 @@
 package io.nuls.offlinecontract.test;
 
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
-import io.nuls.contract.account.model.vo.AccountInfoVo;
+import io.nuls.contract.model.vo.AccountInfoVo;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
 import io.nuls.core.basic.Page;
 import io.nuls.core.crypto.HexUtil;

@@ -2,7 +2,7 @@ package io.nuls.contract.rpc.resource;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
-import io.nuls.contract.account.model.vo.AccountInfoVo;
+import io.nuls.contract.model.vo.AccountInfoVo;
 
 import java.util.Map;
 

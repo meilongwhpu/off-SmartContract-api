@@ -1,7 +1,7 @@
 package io.nuls.contract.account.model.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.nuls.contract.account.model.vo.ContractInfoVo;
+import io.nuls.contract.model.vo.ContractInfoVo;
 import io.nuls.contract.model.ContractMethod;
 import io.nuls.contract.model.ContractResultInfo;
 

@@ -2,7 +2,7 @@ package io.nuls.contract.rpc.resource.impl;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
-import io.nuls.contract.account.model.vo.AccountInfoVo;
+import io.nuls.contract.model.vo.AccountInfoVo;
 import io.nuls.contract.model.RpcErrorCode;
 import io.nuls.contract.model.RpcResultError;
 import io.nuls.contract.rpc.resource.TestResource;

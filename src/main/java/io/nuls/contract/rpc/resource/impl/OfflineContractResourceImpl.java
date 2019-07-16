@@ -14,8 +14,9 @@ import io.nuls.contract.account.model.bo.AccountInfo;
 import io.nuls.contract.account.model.bo.BalanceInfo;
 import io.nuls.contract.account.model.bo.ContractInfo;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
-import io.nuls.contract.account.model.vo.AccountInfoVo;
-import io.nuls.contract.account.model.vo.ContractInfoVo;
+import io.nuls.contract.model.vo.AccountInfoVo;
+import io.nuls.contract.model.vo.ChainInfo;
+import io.nuls.contract.model.vo.ContractInfoVo;
 import io.nuls.contract.account.utils.AccountTool;
 import io.nuls.contract.helper.ContractTxHelper;
 import io.nuls.contract.model.RpcErrorCode;
@@ -26,10 +27,7 @@ import io.nuls.contract.model.txdata.CallContractData;
 import io.nuls.contract.model.txdata.CreateContractData;
 import io.nuls.contract.model.txdata.DeleteContractData;
 import io.nuls.contract.rpc.resource.OfflineContractResource;
-import io.nuls.contract.service.AccountKeyStoreService;
-import io.nuls.contract.service.AccountService;
-import io.nuls.contract.service.ContractService;
-import io.nuls.contract.service.TransactionService;
+import io.nuls.contract.service.*;
 import io.nuls.contract.utils.ContractUtil;
 import io.nuls.core.basic.Page;
 import io.nuls.core.crypto.HexUtil;
@@ -68,6 +66,20 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
     @Autowired
     private ContractTxHelper contractTxHelper;
+
+    @Autowired
+    private ChainService chainService;
+
+    @Override
+    public ChainInfo getChainInfo() {
+        try {
+            ChainInfo chainInfo=chainService.getChainInfo(null);
+            return chainInfo;
+        } catch (NulsException e) {
+            Log.error(e);
+            throw new NulsRuntimeException(e.getErrorCode());
+        }
+    }
 
     @Override
     public Map createAccount(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "password")String password) {

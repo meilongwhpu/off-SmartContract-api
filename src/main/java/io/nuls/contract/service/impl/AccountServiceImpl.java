@@ -6,7 +6,7 @@ import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.base.signture.SignatureUtil;
 import io.nuls.contract.account.model.bo.Account;
 import io.nuls.contract.account.model.bo.AccountKeyStore;
-import io.nuls.contract.account.model.vo.AccountInfoVo;
+import io.nuls.contract.model.vo.AccountInfoVo;
 import io.nuls.contract.account.model.po.AccountPo;
 import io.nuls.contract.account.storage.AccountStorageService;
 import io.nuls.contract.account.utils.AccountTool;

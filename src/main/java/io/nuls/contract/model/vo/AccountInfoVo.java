@@ -1,4 +1,4 @@
-package io.nuls.contract.account.model.vo;
+package io.nuls.contract.model.vo;
 
 import java.io.Serializable;
 import java.math.BigInteger;
