@@ -140,6 +140,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             balanceInfo= httpClient.getRpcHttpClient().invoke("getAccountBalance",new Object[]{chainId,assetChainId,assetId,address},BalanceInfo.class);
         } catch (Throwable e) {
+            Log.error(e);
             throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR,e.getMessage());
         }
         return balanceInfo;
@@ -151,6 +152,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             accountInfo= httpClient.getRpcHttpClient().invoke("getAccount",new Object[]{chainId,address}, AccountInfo.class);
         }catch (Throwable e) {
+            Log.error(e);
             throw new NulsException(RpcErrorCode.NULS_SERVICE_ERROR,e.getMessage());
         }
         return accountInfo;

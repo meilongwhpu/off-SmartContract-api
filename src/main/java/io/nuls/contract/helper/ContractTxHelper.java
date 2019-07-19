@@ -5,6 +5,7 @@ import io.nuls.base.basic.TransactionFeeCalculator;
 import io.nuls.base.data.CoinData;
 import io.nuls.base.data.CoinFrom;
 import io.nuls.base.data.CoinTo;
+import io.nuls.contract.constant.ContractConstant;
 import io.nuls.contract.model.txdata.CallContractData;
 import io.nuls.contract.model.txdata.CreateContractData;
 import io.nuls.contract.model.txdata.DeleteContractData;
@@ -14,6 +15,7 @@ import io.nuls.core.model.LongUtils;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import static io.nuls.contract.constant.ContractConstant.UNLOCKED_TX;
 

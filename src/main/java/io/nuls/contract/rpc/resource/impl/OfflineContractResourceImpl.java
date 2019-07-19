@@ -43,10 +43,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @AutoJsonRpcServiceImpl
@@ -275,6 +272,39 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
+    public Map validateContractCreate(int chainId, String sender, long gasLimit, long price, String contractCode, Object[] args) {
+        boolean isSuccess=true;
+        try{
+            isSuccess=contractService.validateContractCreate(chainId,sender,gasLimit,price,contractCode,args);
+        }catch (NulsException e) {
+            Log.error(e);
+            throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+        }
+        Map<String, Boolean> params = new HashMap<>();
+        params.put("success", isSuccess);
+        return params;
+    }
+
+    @Override
+    public Map uploadContractJar(int chainId,String jarFileData) {
+        if (StringUtils.isBlank(jarFileData)) {
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"jarFileData");
+        }
+        Log.info("accept request,chainId="+chainId);
+        String[] arr = jarFileData.split(",");
+        if (arr.length != 2) {
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"jarFileData");
+        }
+
+        String body = arr[1];
+        byte[] contractCode = Base64.getDecoder().decode(body);
+        Map<String, Object> params = new HashMap<>();
+        params.put("chainId", chainId);
+        params.put("code", HexUtil.encode(contractCode));
+        return params;
+    }
+
+    @Override
     public Map createContract(int chainId,int assetChainId,int assetId, String sender,String password, String contractCode,String alias, Object[] args, long gasLimit, long price,String remark) {
         if (gasLimit < 0) {
             throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"gasLimit");
@@ -334,8 +364,6 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
             CreateContractTransaction tx = new CreateContractTransaction();
            try{
                int gamLimit=contractService.imputedContractCreateGas(chainId,sender,contractCode,args);
-               System.out.println("gamLimit: "+gamLimit);
-               System.out.println("gasLimit: "+gasLimit);
                  if (StringUtils.isNotBlank(remark)) {
                      tx.setRemark(remark.getBytes(StandardCharsets.UTF_8));
                  }
@@ -389,7 +417,21 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
+    public Map imputedContractCreateGas(int chainId, String sender, String contractCode, Object[] args) {
+        try {
+            int gamLimit=contractService.imputedContractCreateGas(chainId,sender,contractCode,args);
+            Map<String,Integer> map = new HashMap<String,Integer>();
+            map.put("gasLimit",gamLimit);
+            return map;
+        } catch (NulsException e) {
+            Log.error(e);
+            throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+        }
+    }
+
+    @Override
     public Map getContractConstructor(int chainId, String contractCode) {
+        Log.info("accept request,chainId="+chainId);
         if (StringUtils.isBlank(contractCode)) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"contractCode");
         }

@@ -8,6 +8,7 @@ import io.nuls.contract.model.vo.ContractInfoVo;
 import io.nuls.core.basic.Page;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
 
 @JsonRpcService("/offlineSmartContract")
@@ -30,9 +31,15 @@ public interface OfflineContractResource {
 
     public Map exportPriKeyByAddress(@JsonRpcParam(value = "chainId")int chainId,@JsonRpcParam(value = "address")String address,@JsonRpcParam(value = "password")String password);
 
+    public Map validateContractCreate(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "sender")String sender, @JsonRpcParam(value = "gasLimit")long gasLimit, @JsonRpcParam(value = "price")long price, @JsonRpcParam(value = "contractCode")String contractCode, @JsonRpcParam(value = "args")Object[] args);
+
+    public Map uploadContractJar(@JsonRpcParam(value = "chainId")int chainId,@JsonRpcParam(value = "jarFileData")String jarFileData);
+
     public Map createContract(@JsonRpcParam(value = "chainId")int chainId,@JsonRpcParam(value = "assetChainId")int assetChainId, @JsonRpcParam(value = "assetId")int assetId, @JsonRpcParam(value = "sender")String sender, @JsonRpcParam(value = "password")String password, @JsonRpcParam(value = "contractCode")String contractCode, @JsonRpcParam(value = "alias")String alias, @JsonRpcParam(value = "args")Object[] args, @JsonRpcParam(value = "gasLimit")long gasLimit, @JsonRpcParam(value = "price")long price, @JsonRpcParam(value = "remark")String remark);
 
-    public Map getContractConstructor(@JsonRpcParam(value = "chainId")int chainId,@JsonRpcParam(value = "contractAddress")String contractAddress);
+    public Map imputedContractCreateGas(@JsonRpcParam(value = "chainId")int chainId,@JsonRpcParam(value = "sender")String sender,@JsonRpcParam(value = "contractCode")String contractCode,@JsonRpcParam(value = "args")Object[] args);
+
+    public Map getContractConstructor(@JsonRpcParam(value = "chainId")int chainId,@JsonRpcParam(value = "contractCode")String contractCode);
 
     public ContractInfoVo getContract(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "contractAddress")String contractAddress);
 

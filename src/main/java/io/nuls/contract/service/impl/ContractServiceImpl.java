@@ -67,7 +67,7 @@ public class ContractServiceImpl implements ContractService {
                 methodArg.setRequired((Boolean) arg.get("required"));
                 argTypes[i++] = methodArg;
             }
-            map.put("methodArgs",argTypes);
+            map.put("constructor",argTypes);
             map.put("isNrc20",isNrc20);
         }
         return map;
