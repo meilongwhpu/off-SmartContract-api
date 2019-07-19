@@ -70,7 +70,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     @Override
     public ChainInfo getChainInfo() {
         try {
-            ChainInfo chainInfo=chainService.getChainInfo(null);
+            ChainInfo chainInfo = chainService.getChainInfo(null);
             return chainInfo;
         } catch (NulsException e) {
             Log.error(e);
@@ -79,12 +79,12 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public Map createAccount(@JsonRpcParam(value = "chainId")int chainId, @JsonRpcParam(value = "password")String password) {
-        Map<String,String> map = new HashMap<String,String>();
-        try{
-            Account account=accountService.createAccount(chainId,password);
-            map.put("address",account.getAddress().toString());
-        }catch (NulsException e){
+    public Map createAccount(@JsonRpcParam(value = "chainId") int chainId, @JsonRpcParam(value = "password") String password) {
+        Map<String, String> map = new HashMap<String, String>();
+        try {
+            Account account = accountService.createAccount(chainId, password);
+            map.put("address", account.getAddress().toString());
+        } catch (NulsException e) {
             Log.error(e);
             throw new NulsRuntimeException(e.getErrorCode());
         }
@@ -93,15 +93,15 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
     @Override
     public boolean deleteAccount(int chainId, String address, String password) {
-        boolean result=false;
+        boolean result = false;
         if (address == null) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"address");
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "address");
         }
         if (!AddressTool.validAddress(chainId, address)) {
             throw new NulsRuntimeException(RpcErrorCode.ADDRESS_ERROR);
         }
         try {
-             result=accountService.removeAccount(chainId,address,password);
+            result = accountService.removeAccount(chainId, address, password);
         } catch (NulsException e) {
             Log.error(e);
             throw new NulsRuntimeException(e.getErrorCode());
@@ -112,34 +112,34 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     @Override
     public AccountInfoVo getAccount(int chainId, int assetChainId, int assetId, String address) {
         if (address == null) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"address");
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "address");
         }
         if (!AddressTool.validAddress(chainId, address)) {
             throw new NulsRuntimeException(RpcErrorCode.ADDRESS_ERROR);
         }
-        Account account= null;
+        Account account = null;
         try {
-            account = accountService.getAccount(chainId,address);
+            account = accountService.getAccount(chainId, address);
         } catch (NulsException e) {
             Log.error(e);
             throw new NulsRuntimeException(e.getErrorCode());
         }
 
-        if(account!=null){
+        if (account != null) {
             try {
-                AccountInfoVo accountInfo= new AccountInfoVo();
+                AccountInfoVo accountInfo = new AccountInfoVo();
                 accountInfo.setChainId(account.getChainId());
                 accountInfo.setAddress(account.getAddress().toString());
-                AccountInfo accountForChain =accountService.getAccountForChain(chainId,address);
+                AccountInfo accountForChain = accountService.getAccountForChain(chainId, address);
                 accountInfo.setBalance(accountForChain.getBalance());
                 accountInfo.setTotalBalance(accountForChain.getTotalBalance());
                 accountInfo.setAlias(accountForChain.getAlias());
                 return accountInfo;
             } catch (NulsException e) {
                 Log.error(e);
-                throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+                throw new NulsRuntimeException(e.getErrorCode(), e.getMessage());
             }
-        }else {
+        } else {
             throw new NulsRuntimeException(RpcErrorCode.ACCOUNT_NOT_EXIST);
         }
 
@@ -149,22 +149,22 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     public Page<AccountInfoVo> getAccountList(int chainId, int pageNumber, int pageSize) {
         Page<AccountInfoVo> resultPage;
         if (pageNumber < 1) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"pageNumber");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "pageNumber");
         }
-        if ( pageSize < 1) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"pageSize");
+        if (pageSize < 1) {
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "pageSize");
         }
 
-        List<AccountInfoVo> accountList= null;
+        List<AccountInfoVo> accountList = null;
         try {
             accountList = accountService.getAccountList(chainId);
         } catch (NulsException e) {
             Log.error(e);
             throw new NulsRuntimeException(e.getErrorCode());
         }
-        int totalSize=0;
-        if(accountList!=null){
-            totalSize=accountList.size();
+        int totalSize = 0;
+        if (accountList != null) {
+            totalSize = accountList.size();
         }
 
         //根据分页参数返回账户地址列表 Returns the account address list according to paging parameters
@@ -187,46 +187,46 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
     @Override
     public Map exportAccountKeyStore(int chainId, String address, String password, String filePath) {
-        if (address == null ) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"address");
+        if (address == null) {
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "address");
         }
-        if (password == null ) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"password");
+        if (password == null) {
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "password");
         }
-        if (filePath == null ) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"filePath");
+        if (filePath == null) {
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "filePath");
         }
         String backupFileName = null;
         try {
-            backupFileName = accountKeyStoreService.backupAccountToKeyStore(filePath,chainId, address, password);
+            backupFileName = accountKeyStoreService.backupAccountToKeyStore(filePath, chainId, address, password);
         } catch (NulsException e) {
             Log.error(e);
             throw new NulsRuntimeException(e.getErrorCode());
         }
-        Map<String,String> map = new HashMap<String,String>();
-        map.put("path",backupFileName);
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("path", backupFileName);
         return map;
     }
 
     @Override
     public Map importAccountByKeystore(int chainId, String password, String keyStore, boolean overwrite) {
-        if (password == null ) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"password");
+        if (password == null) {
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "password");
         }
         if (keyStore == null) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"keyStore");
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "keyStore");
         }
 
         try {
             AccountKeyStoreDto accountKeyStoreDto = JSONUtils.json2pojo(new String(RPCUtil.decode(keyStore)), AccountKeyStoreDto.class);
-            Account account=  accountService.importAccountByKeyStore(accountKeyStoreDto.toAccountKeyStore(), chainId, password, overwrite);
-            Map<String,String> map = new HashMap<String,String>();
-            map.put("address",account.getAddress().toString());
+            Account account = accountService.importAccountByKeyStore(accountKeyStoreDto.toAccountKeyStore(), chainId, password, overwrite);
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("address", account.getAddress().toString());
             return map;
-        }catch (NulsException e) {
+        } catch (NulsException e) {
             Log.error(e);
             throw new NulsRuntimeException(e.getErrorCode());
-        }catch (IOException e) {
+        } catch (IOException e) {
             Log.error(e);
             throw new NulsRuntimeException(e);
         }
@@ -234,17 +234,17 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
     @Override
     public Map importAccountByPriKey(int chainId, String priKey, String password, boolean overwrite) {
-        if (priKey == null ) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"priKey");
+        if (priKey == null) {
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "priKey");
         }
         if (password == null) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"password");
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "password");
         }
 
         try {
-            Account account= accountService.importAccountByPrikey(chainId, priKey, password, overwrite);
-            Map<String,String> map = new HashMap<String,String>();
-            map.put("address",account.getAddress().toString());
+            Account account = accountService.importAccountByPrikey(chainId, priKey, password, overwrite);
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("address", account.getAddress().toString());
             return map;
         } catch (NulsException e) {
             Log.error(e);
@@ -254,16 +254,16 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
     @Override
     public Map exportPriKeyByAddress(int chainId, String address, String password) {
-        if (password == null ) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"password");
+        if (password == null) {
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "password");
         }
         if (address == null) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"address");
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "address");
         }
         try {
-            String unencryptedPrivateKey= accountService.getPrivateKey(chainId,address,password);
-            Map<String,String> map = new HashMap<String,String>();
-            map.put("privateKey",unencryptedPrivateKey);
+            String unencryptedPrivateKey = accountService.getPrivateKey(chainId, address, password);
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("privateKey", unencryptedPrivateKey);
             return map;
         } catch (NulsException e) {
             Log.error(e);
@@ -273,12 +273,12 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
     @Override
     public Map validateContractCreate(int chainId, String sender, long gasLimit, long price, String contractCode, Object[] args) {
-        boolean isSuccess=true;
-        try{
-            isSuccess=contractService.validateContractCreate(chainId,sender,gasLimit,price,contractCode,args);
-        }catch (NulsException e) {
+        boolean isSuccess = true;
+        try {
+            isSuccess = contractService.validateContractCreate(chainId, sender, gasLimit, price, contractCode, args);
+        } catch (NulsException e) {
             Log.error(e);
-            throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+            throw new NulsRuntimeException(e.getErrorCode(), e.getMessage());
         }
         Map<String, Boolean> params = new HashMap<>();
         params.put("success", isSuccess);
@@ -286,14 +286,14 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public Map uploadContractJar(int chainId,String jarFileData) {
+    public Map uploadContractJar(int chainId, String jarFileData) {
         if (StringUtils.isBlank(jarFileData)) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"jarFileData");
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "jarFileData");
         }
-        Log.info("accept request,chainId="+chainId);
+        Log.info("accept request,chainId=" + chainId);
         String[] arr = jarFileData.split(",");
         if (arr.length != 2) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"jarFileData");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "jarFileData");
         }
 
         String body = arr[1];
@@ -305,113 +305,116 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public Map createContract(int chainId,int assetChainId,int assetId, String sender,String password, String contractCode,String alias, Object[] args, long gasLimit, long price,String remark) {
+    public Map createContract(int chainId, int assetChainId, int assetId, String sender, String password, String contractCode, String alias, Object[] args, long gasLimit, long price, String remark) {
         if (gasLimit < 0) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"gasLimit");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "gasLimit");
         }
 
         if (price < 25) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"price not less than 25");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "price not less than 25");
         }
 
         if (!AddressTool.validAddress(chainId, sender)) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"address");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "address");
         }
         if (StringUtils.isBlank(contractCode)) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"contractCode");
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "contractCode");
         }
-        if(!FormatValidUtils.validAlias(alias)){
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"alias");
+        if (!FormatValidUtils.validAlias(alias)) {
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "alias");
         }
 
-        Account account= null;
+        Account account = null;
         try {
-            account = accountService.getAccount(chainId,sender);
+            account = accountService.getAccount(chainId, sender);
         } catch (NulsException e) {
             Log.error(e);
             throw new NulsRuntimeException(e.getErrorCode());
         }
-        if(account==null){
+        if (account == null) {
             throw new NulsRuntimeException(RpcErrorCode.ACCOUNT_NOT_EXIST);
         }
         //账户密码验证
-        boolean validate= accountService.validationPassword(chainId,sender,password);
-        if(!validate){
+        boolean validate = accountService.validationPassword(chainId, sender, password);
+        if (!validate) {
             throw new NulsRuntimeException(RpcErrorCode.VALIADE_PW_ERROR);
         }
         byte[] contractCodeBytes = HexUtil.decode(contractCode);
-        String[] argTypes=null;
+        String[] argTypes = null;
 
-        boolean isSuccess=true;
-        try{
-            argTypes=contractService.getContractConstructorArgsTypes(chainId,contractCode);
-            if (argTypes==null){
+        boolean isSuccess = true;
+        try {
+            argTypes = contractService.getContractConstructorArgsTypes(chainId, contractCode);
+            if (argTypes == null) {
                 throw new NulsRuntimeException(RpcErrorCode.GET_CONSTRUSTOR_PARAMETER);
             }
-            isSuccess=contractService.validateContractCreate(chainId,sender,gasLimit,price,contractCode,args);
-        }catch (NulsException e) {
+            isSuccess = contractService.validateContractCreate(chainId, sender, gasLimit, price, contractCode, args);
+        } catch (NulsException e) {
             Log.error(e);
-            throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+            throw new NulsRuntimeException(e.getErrorCode(), e.getMessage());
         }
 
-        if(isSuccess){
+        if (isSuccess) {
             Address contract = AccountTool.createContractAddress(chainId);
             byte[] contractAddressBytes = contract.getAddressBytes();
 
-            String contractAddress=AddressTool.getStringAddressByBytes( contract.getAddressBytes());
+            String contractAddress = AddressTool.getStringAddressByBytes(contract.getAddressBytes());
             byte[] senderBytes = AddressTool.getAddress(sender);
 
             CreateContractTransaction tx = new CreateContractTransaction();
-           try{
-               int gamLimit=contractService.imputedContractCreateGas(chainId,sender,contractCode,args);
-                 if (StringUtils.isNotBlank(remark)) {
-                     tx.setRemark(remark.getBytes(StandardCharsets.UTF_8));
-                 }
-                 tx.setTime(System.currentTimeMillis()/ 1000);
+            try {
+                int gamLimit = contractService.imputedContractCreateGas(chainId, sender, contractCode, args);
+                if (StringUtils.isNotBlank(remark)) {
+                    tx.setRemark(remark.getBytes(StandardCharsets.UTF_8));
+                }
+                tx.setTime(System.currentTimeMillis() / 1000);
 
-                 String[][] convertArgs= ContractUtil.twoDimensionalArray(args, argTypes);
-                 //组装txData
-                 CreateContractData createContractData= contractTxHelper.getCreateContractData(senderBytes,contractAddressBytes,BigInteger.ZERO,gamLimit,price,contractCodeBytes,alias,convertArgs);
+                String[][] convertArgs = ContractUtil.twoDimensionalArray(args, argTypes);
+                //组装txData
+                CreateContractData createContractData = contractTxHelper.getCreateContractData(senderBytes, contractAddressBytes, BigInteger.ZERO, gamLimit, price, contractCodeBytes, alias, convertArgs);
 
-                 // 计算CoinData
-                 BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetChainId,assetId,sender);
-                 CoinData coinData = contractTxHelper.makeCoinData(chainId,assetId,senderBytes, contractAddressBytes,gamLimit,price,BigInteger.ZERO,tx.size(),createContractData,balanceInfo.getNonce(),balanceInfo.getBalance());
-                 if(coinData==null){
-                     throw new NulsRuntimeException(RpcErrorCode.INSUFFICIENT_BALANCE);
-                 }
+                // 计算CoinData
+                BalanceInfo balanceInfo = accountService.getAccountBalance(chainId, assetChainId, assetId, sender);
+                CoinData coinData = contractTxHelper.makeCoinData(chainId, assetId, senderBytes, contractAddressBytes, gamLimit, price, BigInteger.ZERO, tx.size(), createContractData, balanceInfo.getNonce(), balanceInfo.getBalance());
+                if (coinData == null) {
+                    throw new NulsRuntimeException(RpcErrorCode.INSUFFICIENT_BALANCE);
+                }
 
-                 tx.setTxDataObj(createContractData);
-                 tx.setCoinDataObj(coinData);
-                 tx.serializeData();
-                 tx.setHash(NulsHash.calcHash(tx.serializeForHash()));
+                tx.setTxDataObj(createContractData);
+                tx.setCoinDataObj(coinData);
+                tx.serializeData();
+                tx.setHash(NulsHash.calcHash(tx.serializeForHash()));
 
-               // 签名、发送交易到交易模块
-                 P2PHKSignature signature = accountService.signDigest(tx.getHash().getBytes(),chainId,sender,password);
-                 if (null == signature || signature.getSignData() == null) {
-                     throw new NulsRuntimeException(RpcErrorCode.SIGNATURE_ERROR);
-                 }
-               TransactionSignature transactionSignature = new TransactionSignature();
-               List<P2PHKSignature> p2PHKSignatures = new ArrayList<>();
-               p2PHKSignatures.add(signature);
-               transactionSignature.setP2PHKSignatures(p2PHKSignatures);
-               tx.setTransactionSignature(transactionSignature.serialize());
-               String txData = RPCUtil.encode(tx.serialize());
-               boolean result= transactionService.broadcastTx(chainId,txData);
-               if(result){
-                   Map<String,String> map = new HashMap<String,String>();
-                   map.put("contractAddress",contractAddress);
-                   return map;
-               }else {
-                   throw new NulsRuntimeException(RpcErrorCode.BROADCAST_TX_ERROR);
-               }
-             }catch (NulsException e) {
-               Log.error(e);
-               throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
-           }catch (Throwable e){
-               Log.error(e);
-               throw new NulsRuntimeException(RpcErrorCode.CONTRACT_TX_CREATE_ERROR);
-           }
-        }else {
+                // 签名、发送交易到交易模块
+                P2PHKSignature signature = accountService.signDigest(tx.getHash().getBytes(), chainId, sender, password);
+                if (null == signature || signature.getSignData() == null) {
+                    throw new NulsRuntimeException(RpcErrorCode.SIGNATURE_ERROR);
+                }
+                TransactionSignature transactionSignature = new TransactionSignature();
+                List<P2PHKSignature> p2PHKSignatures = new ArrayList<>();
+                p2PHKSignatures.add(signature);
+                transactionSignature.setP2PHKSignatures(p2PHKSignatures);
+                tx.setTransactionSignature(transactionSignature.serialize());
+                String txData = RPCUtil.encode(tx.serialize());
+                boolean result = transactionService.broadcastTx(chainId, txData);
+                if (result) {
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put("contractAddress", contractAddress);
+                    return map;
+                } else {
+                    throw new NulsRuntimeException(RpcErrorCode.BROADCAST_TX_ERROR);
+                }
+            } catch (NulsException e) {
+                Log.error(e);
+                throw new NulsRuntimeException(e.getErrorCode(), e.getMessage());
+            } catch (Throwable e) {
+                Log.error(e);
+                if(e instanceof NulsRuntimeException) {
+                    throw (NulsRuntimeException) e;
+                }
+                throw new NulsRuntimeException(RpcErrorCode.CONTRACT_TX_CREATE_ERROR, e.getMessage());
+            }
+        } else {
             throw new NulsRuntimeException(RpcErrorCode.CONTRACT_VALIDATION_FAILED);
         }
     }
@@ -419,93 +422,93 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     @Override
     public Map imputedContractCreateGas(int chainId, String sender, String contractCode, Object[] args) {
         try {
-            int gamLimit=contractService.imputedContractCreateGas(chainId,sender,contractCode,args);
-            Map<String,Integer> map = new HashMap<String,Integer>();
-            map.put("gasLimit",gamLimit);
+            int gamLimit = contractService.imputedContractCreateGas(chainId, sender, contractCode, args);
+            Map<String, Integer> map = new HashMap<String, Integer>();
+            map.put("gasLimit", gamLimit);
             return map;
         } catch (NulsException e) {
             Log.error(e);
-            throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+            throw new NulsRuntimeException(e.getErrorCode(), e.getMessage());
         }
     }
 
     @Override
     public Map getContractConstructor(int chainId, String contractCode) {
-        Log.info("accept request,chainId="+chainId);
+        Log.info("accept request,chainId=" + chainId);
         if (StringUtils.isBlank(contractCode)) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"contractCode");
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "contractCode");
         }
         try {
-            Map result=contractService.getContractConstructor(chainId,contractCode);
+            Map result = contractService.getContractConstructor(chainId, contractCode);
             return result;
-         } catch (NulsException e) {
+        } catch (NulsException e) {
             Log.error(e);
-            throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+            throw new NulsRuntimeException(e.getErrorCode(), e.getMessage());
         }
     }
 
     @Override
     public ContractInfoVo getContract(int chainId, String contractAddress) {
         if (!AddressTool.validAddress(chainId, contractAddress)) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"contractAddress");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "contractAddress");
         }
         try {
-            ContractInfo contractInfo=contractService.getContract(chainId,contractAddress);
-            if(contractInfo!=null){
+            ContractInfo contractInfo = contractService.getContract(chainId, contractAddress);
+            if (contractInfo != null) {
                 return contractInfo.toContractInfoVo();
-            }else {
+            } else {
                 throw new NulsRuntimeException(RpcErrorCode.GET_CONTRACT_INFO_FAILED);
             }
         } catch (NulsException e) {
             Log.error(e);
-            throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+            throw new NulsRuntimeException(e.getErrorCode(), e.getMessage());
         }
     }
 
     @Override
-    public Map callContract(int chainId, int assetChainId,int assetId, String sender,String password, String contractAddress, BigInteger value, String methodName, String methodDesc, Object[] args, long gasLimit, long price,String remark) {
+    public Map callContract(int chainId, int assetChainId, int assetId, String sender, String password, String contractAddress, BigInteger value, String methodName, String methodDesc, Object[] args, long gasLimit, long price, String remark) {
         if (value.compareTo(BigInteger.ZERO) < 0) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"value");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "value");
         }
         if (gasLimit < 0) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"gasLimit");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "gasLimit");
         }
 
         if (price < 25) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"price not less than 25");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "price not less than 25");
         }
 
         if (!AddressTool.validAddress(chainId, sender)) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"sender's address");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "sender's address");
         }
         if (!AddressTool.validAddress(chainId, contractAddress)) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"contractAddress");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "contractAddress");
         }
         if (StringUtils.isBlank(methodName)) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"methodName");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "methodName");
         }
 
         //账户密码验证
-        boolean validate= accountService.validationPassword(chainId,sender,password);
-        if(!validate){
+        boolean validate = accountService.validationPassword(chainId, sender, password);
+        if (!validate) {
             throw new NulsRuntimeException(RpcErrorCode.VALIADE_PW_ERROR);
         }
         byte[] contractAddressBytes = AddressTool.getAddress(contractAddress);
-        String[] argsTypes=null;
-        try{
-            argsTypes= contractService.getContractMethodArgsTypes(chainId, contractAddress, methodName);
-        }catch (NulsException e) {
+        String[] argsTypes = null;
+        try {
+            argsTypes = contractService.getContractMethodArgsTypes(chainId, contractAddress, methodName);
+        } catch (NulsException e) {
             Log.error(e);
-            throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+            throw new NulsRuntimeException(e.getErrorCode(), e.getMessage());
         }
         String[][] convertArgs = ContractUtil.twoDimensionalArray(args, argsTypes);
-        try{
-            validate=contractService.validateContractCall(chainId,sender,value,gasLimit,price,contractAddress,methodName,methodDesc,args);
-        }catch (NulsException e) {
+        try {
+            validate = contractService.validateContractCall(chainId, sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args);
+        } catch (NulsException e) {
             Log.error(e);
-            throw new NulsRuntimeException(RpcErrorCode.VALIADE_CONTRACT_CALL_ERROR,e.getMessage());
+            throw new NulsRuntimeException(RpcErrorCode.VALIADE_CONTRACT_CALL_ERROR, e.getMessage());
         }
-        if(!validate){
+        if (!validate) {
             throw new NulsRuntimeException(RpcErrorCode.VALIADE_CONTRACT_CALL_ERROR);
         }
 
@@ -513,16 +516,16 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
         if (StringUtils.isNotBlank(remark)) {
             tx.setRemark(remark.getBytes(StandardCharsets.UTF_8));
         }
-        tx.setTime(System.currentTimeMillis()/ 1000);
+        tx.setTime(System.currentTimeMillis() / 1000);
         byte[] senderBytes = AddressTool.getAddress(sender);
 
-        try{
+        try {
             //组装txData
-            CallContractData createContractData= contractTxHelper.getCallContractData(senderBytes, contractAddressBytes,value,gasLimit,price,methodName,methodDesc, convertArgs);
+            CallContractData createContractData = contractTxHelper.getCallContractData(senderBytes, contractAddressBytes, value, gasLimit, price, methodName, methodDesc, convertArgs);
 
-            BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetChainId,assetId,sender);
-            CoinData coinData = contractTxHelper.makeCoinData(chainId,assetId,senderBytes, contractAddressBytes,gasLimit,price,value,tx.size(),createContractData,balanceInfo.getNonce(),balanceInfo.getBalance());
-            if(coinData==null){
+            BalanceInfo balanceInfo = accountService.getAccountBalance(chainId, assetChainId, assetId, sender);
+            CoinData coinData = contractTxHelper.makeCoinData(chainId, assetId, senderBytes, contractAddressBytes, gasLimit, price, value, tx.size(), createContractData, balanceInfo.getNonce(), balanceInfo.getBalance());
+            if (coinData == null) {
                 throw new NulsRuntimeException(RpcErrorCode.INSUFFICIENT_BALANCE);
             }
             tx.setTxDataObj(createContractData);
@@ -532,7 +535,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
             tx.setHash(NulsHash.calcHash(tx.serializeForHash()));
 
             // 签名、发送交易到交易模块
-            P2PHKSignature signature = accountService.signDigest(tx.getHash().getBytes(),chainId,sender,password);
+            P2PHKSignature signature = accountService.signDigest(tx.getHash().getBytes(), chainId, sender, password);
             if (null == signature || signature.getSignData() == null) {
                 throw new NulsRuntimeException(RpcErrorCode.SIGNATURE_ERROR);
             }
@@ -542,38 +545,38 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
             transactionSignature.setP2PHKSignatures(p2PHKSignatures);
             tx.setTransactionSignature(transactionSignature.serialize());
             String txData = RPCUtil.encode(tx.serialize());
-            boolean result= transactionService.broadcastTx(chainId,txData);
-            if(result){
-                Map<String,String> map = new HashMap<String,String>();
-                map.put("txHash",tx.getHash().toHex());
+            boolean result = transactionService.broadcastTx(chainId, txData);
+            if (result) {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("txHash", tx.getHash().toHex());
                 return map;
-            }else {
+            } else {
                 throw new NulsRuntimeException(RpcErrorCode.BROADCAST_TX_ERROR);
             }
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             Log.error(e);
             throw new NulsRuntimeException(e);
         }
     }
 
     @Override
-    public Map deleteContract(int chainId,int assetChainId, int assetId, String sender,String password, String contractAddress,String remark) {
+    public Map deleteContract(int chainId, int assetChainId, int assetId, String sender, String password, String contractAddress, String remark) {
         if (!AddressTool.validAddress(chainId, sender)) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"sender's address");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "sender's address");
         }
         //账户密码验证
-        boolean validate= accountService.validationPassword(chainId,sender,password);
-        if(!validate){
+        boolean validate = accountService.validationPassword(chainId, sender, password);
+        if (!validate) {
             throw new NulsRuntimeException(RpcErrorCode.VALIADE_PW_ERROR);
         }
-        try{
-            validate =contractService.validateContractDelete(chainId, sender, contractAddress);
-        }catch (NulsException e) {
+        try {
+            validate = contractService.validateContractDelete(chainId, sender, contractAddress);
+        } catch (NulsException e) {
             Log.error(e);
-            throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+            throw new NulsRuntimeException(e.getErrorCode(), e.getMessage());
         }
 
-        if(!validate){
+        if (!validate) {
             throw new NulsRuntimeException(RpcErrorCode.VALIADE_CONTRACT_DELETE_ERROR);
         }
         byte[] contractAddressBytes = AddressTool.getAddress(contractAddress);
@@ -581,13 +584,13 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
         if (StringUtils.isNotBlank(remark)) {
             tx.setRemark(remark.getBytes(StandardCharsets.UTF_8));
         }
-        tx.setTime(System.currentTimeMillis()/ 1000);
+        tx.setTime(System.currentTimeMillis() / 1000);
         byte[] senderBytes = AddressTool.getAddress(sender);
         try {
-            DeleteContractData deleteContractData= contractTxHelper.getDeleteContractData(contractAddressBytes,senderBytes);
-            BalanceInfo balanceInfo=accountService.getAccountBalance(chainId,assetChainId,assetId,sender);
-            CoinData coinData = contractTxHelper.makeCoinData(chainId,assetId,senderBytes, contractAddressBytes,0L, 0L, BigInteger.ZERO,tx.size(),deleteContractData,balanceInfo.getNonce(),balanceInfo.getBalance());
-            if(coinData==null){
+            DeleteContractData deleteContractData = contractTxHelper.getDeleteContractData(contractAddressBytes, senderBytes);
+            BalanceInfo balanceInfo = accountService.getAccountBalance(chainId, assetChainId, assetId, sender);
+            CoinData coinData = contractTxHelper.makeCoinData(chainId, assetId, senderBytes, contractAddressBytes, 0L, 0L, BigInteger.ZERO, tx.size(), deleteContractData, balanceInfo.getNonce(), balanceInfo.getBalance());
+            if (coinData == null) {
                 throw new NulsRuntimeException(RpcErrorCode.INSUFFICIENT_BALANCE);
             }
             tx.setTxDataObj(deleteContractData);
@@ -597,7 +600,7 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
             tx.setHash(NulsHash.calcHash(tx.serializeForHash()));
 
             // 签名、发送交易到交易模块
-            P2PHKSignature signature = accountService.signDigest(tx.getHash().getBytes(),chainId,sender,password);
+            P2PHKSignature signature = accountService.signDigest(tx.getHash().getBytes(), chainId, sender, password);
             if (null == signature || signature.getSignData() == null) {
                 throw new NulsRuntimeException(RpcErrorCode.SIGNATURE_ERROR);
             }
@@ -607,15 +610,15 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
             transactionSignature.setP2PHKSignatures(p2PHKSignatures);
             tx.setTransactionSignature(transactionSignature.serialize());
             String txData = RPCUtil.encode(tx.serialize());
-            boolean result= transactionService.broadcastTx(chainId,txData);
-            if(result){
-                Map<String,String> map = new HashMap<String,String>();
-                map.put("address",contractAddress);
+            boolean result = transactionService.broadcastTx(chainId, txData);
+            if (result) {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("address", contractAddress);
                 return map;
-            }else {
+            } else {
                 throw new NulsRuntimeException(RpcErrorCode.BROADCAST_TX_ERROR);
             }
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             Log.error(e);
             throw new NulsRuntimeException(e);
         }
@@ -624,36 +627,36 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     @Override
     public Map invokeContractViewMethod(int chainId, String contractAddress, String methodName, String methodDesc, Object[] args) {
         if (!AddressTool.validAddress(chainId, contractAddress)) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"contractAddress");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "contractAddress");
         }
         if (StringUtils.isBlank(methodName)) {
-            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"methodName");
+            throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER, "methodName");
         }
         try {
-            String invokeResult= contractService.invokeView(chainId,contractAddress,methodName,methodDesc,args);
-            Map<String,String> map = new HashMap<String,String>();
-            map.put("methodReturn",invokeResult);
+            String invokeResult = contractService.invokeView(chainId, contractAddress, methodName, methodDesc, args);
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("methodReturn", invokeResult);
             return map;
-        }catch (NulsException e) {
+        } catch (NulsException e) {
             Log.error(e);
-            throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+            throw new NulsRuntimeException(e.getErrorCode(), e.getMessage());
         }
     }
 
     @Override
     public Map getContractMethodArgsTypes(int chainId, String contractAddress, String methodName) {
         if (!AddressTool.validAddress(chainId, contractAddress)) {
-            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"contractAddress");
+            throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR, "contractAddress");
         }
-        String[] argsTypes=null;
-        try{
-            argsTypes= contractService.getContractMethodArgsTypes(chainId, contractAddress, methodName);
-        }catch (NulsException e) {
+        String[] argsTypes = null;
+        try {
+            argsTypes = contractService.getContractMethodArgsTypes(chainId, contractAddress, methodName);
+        } catch (NulsException e) {
             Log.error(e);
-            throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+            throw new NulsRuntimeException(e.getErrorCode(), e.getMessage());
         }
-        Map<String,String[]> map = new HashMap<String,String[]>();
-        map.put("argsTypes",argsTypes);
+        Map<String, String[]> map = new HashMap<String, String[]>();
+        map.put("argsTypes", argsTypes);
         return map;
     }
 
