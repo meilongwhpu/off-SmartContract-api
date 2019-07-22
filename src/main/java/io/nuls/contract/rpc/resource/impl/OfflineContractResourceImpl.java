@@ -190,9 +190,9 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
         if (address == null ) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"address");
         }
-        if (password == null ) {
+/*        if (password == null ) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"password");
-        }
+        }*/
         if (filePath == null ) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"filePath");
         }
@@ -210,9 +210,9 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
     @Override
     public Map importAccountByKeystore(int chainId, String password, String keyStore, boolean overwrite) {
-        if (password == null ) {
+        /*if (password == null ) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"password");
-        }
+        }*/
         if (keyStore == null) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"keyStore");
         }
@@ -237,9 +237,9 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
         if (priKey == null ) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"priKey");
         }
-        if (password == null) {
+        /*if (password == null) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"password");
-        }
+        }*/
 
         try {
             Account account= accountService.importAccountByPrikey(chainId, priKey, password, overwrite);
@@ -254,9 +254,9 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
     @Override
     public Map exportPriKeyByAddress(int chainId, String address, String password) {
-        if (password == null ) {
+/*        if (password == null ) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"password");
-        }
+        }*/
         if (address == null) {
             throw new NulsRuntimeException(RpcErrorCode.NULL_PARAMETER,"address");
         }
@@ -407,6 +407,8 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
              }catch (NulsException e) {
                Log.error(e);
                throw new NulsRuntimeException(e.getErrorCode(),e.getMessage());
+           }catch(NulsRuntimeException e){
+               throw e;
            }catch (Throwable e){
                Log.error(e);
                throw new NulsRuntimeException(RpcErrorCode.CONTRACT_TX_CREATE_ERROR);
@@ -550,6 +552,8 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
             }else {
                 throw new NulsRuntimeException(RpcErrorCode.BROADCAST_TX_ERROR);
             }
+        }catch(NulsRuntimeException e){
+            throw e;
         }catch (Throwable e) {
             Log.error(e);
             throw new NulsRuntimeException(e);
@@ -615,6 +619,8 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
             }else {
                 throw new NulsRuntimeException(RpcErrorCode.BROADCAST_TX_ERROR);
             }
+        }catch(NulsRuntimeException e){
+            throw e;
         }catch (Throwable e) {
             Log.error(e);
             throw new NulsRuntimeException(e);
