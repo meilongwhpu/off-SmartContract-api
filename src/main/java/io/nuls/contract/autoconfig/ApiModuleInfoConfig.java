@@ -39,6 +39,9 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     @Value("${assetChainId}")
     private String assetChainId;
 
+    @Value("${default.jar.file.path}")
+    private String defaultJarFilePath;
+
     public String getApiModuleApi() {
         return apiModuleApi;
     }
@@ -134,6 +137,14 @@ public class ApiModuleInfoConfig  implements InitializingBean {
 
     public void setAssetChainId(String assetChainId) {
         this.assetChainId = assetChainId;
+    }
+
+    public String getDefaultJarFilePath() {
+        return defaultJarFilePath;
+    }
+
+    public void setDefaultJarFilePath(String defaultJarFilePath) {
+        this.defaultJarFilePath = defaultJarFilePath;
     }
 
     @Override

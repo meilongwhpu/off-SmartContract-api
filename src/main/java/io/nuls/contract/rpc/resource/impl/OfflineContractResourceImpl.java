@@ -14,6 +14,7 @@ import io.nuls.contract.account.model.bo.AccountInfo;
 import io.nuls.contract.account.model.bo.BalanceInfo;
 import io.nuls.contract.account.model.bo.ContractInfo;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
+import io.nuls.contract.autoconfig.ApiModuleInfoConfig;
 import io.nuls.contract.constant.ContractConstant;
 import io.nuls.contract.model.vo.AccountInfoVo;
 import io.nuls.contract.model.vo.ChainInfo;
@@ -52,6 +53,9 @@ import java.util.*;
 @Service
 @AutoJsonRpcServiceImpl
 public class OfflineContractResourceImpl implements OfflineContractResource {
+
+    @Autowired
+    private ApiModuleInfoConfig infoConfig;
 
     @Autowired
     private AccountService accountService;
@@ -423,12 +427,10 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
-    public Map getDefaultContractCode(String filePath) {
+    public Map getDefaultContractCode() {
+        String filePath=infoConfig.getDefaultJarFilePath();
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("haveJarFile",false);
-        if(StringUtils.isBlank(filePath)){
-            return map;
-        }
 
         File jarFileDir=DBUtils.loadDataPath(filePath);
         if(jarFileDir.exists()){
