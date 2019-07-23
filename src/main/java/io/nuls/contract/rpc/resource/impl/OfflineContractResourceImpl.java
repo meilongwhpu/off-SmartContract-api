@@ -419,6 +419,11 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     }
 
     @Override
+    public Map getDefaultContractCode(String filePath) {
+        return null;
+    }
+
+    @Override
     public Map imputedContractCreateGas(int chainId, String sender, String contractCode, Object[] args) {
         try {
             int gamLimit=contractService.imputedContractCreateGas(chainId,sender,contractCode,args);
