@@ -14,6 +14,7 @@ import io.nuls.contract.account.model.bo.AccountInfo;
 import io.nuls.contract.account.model.bo.BalanceInfo;
 import io.nuls.contract.account.model.bo.ContractInfo;
 import io.nuls.contract.account.model.po.AccountKeyStoreDto;
+import io.nuls.contract.constant.ContractConstant;
 import io.nuls.contract.model.vo.AccountInfoVo;
 import io.nuls.contract.model.vo.ChainInfo;
 import io.nuls.contract.model.vo.ContractInfoVo;
@@ -37,10 +38,13 @@ import io.nuls.core.log.Log;
 import io.nuls.core.model.FormatValidUtils;
 import io.nuls.core.model.StringUtils;
 import io.nuls.core.parse.JSONUtils;
+import io.nuls.core.rockdb.util.DBUtils;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -420,7 +424,45 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
 
     @Override
     public Map getDefaultContractCode(String filePath) {
-        return null;
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("haveJarFile",false);
+        if(StringUtils.isBlank(filePath)){
+            return map;
+        }
+
+        File jarFileDir=DBUtils.loadDataPath(filePath);
+        if(jarFileDir.exists()){
+            if(jarFileDir.isDirectory()){
+                File files[] = jarFileDir.listFiles();
+                for(File file:files){
+                    if(file.getName().toLowerCase().endsWith(ContractConstant.FILE_EXT)){
+                        try {
+                            map.put("haveJarFile",true);
+                            map.put("fileName",file.getName());
+                            String  hexEncode=  ContractUtil.getContractCode(file);
+                            map.put("codeHex",hexEncode);
+                        } catch (Exception e) {
+                            throw new NulsRuntimeException(RpcErrorCode.FILE_OPERATION_FAILD);
+                        }
+                        break;
+                    }
+                }
+            }else{
+                if(jarFileDir.getName().toLowerCase().endsWith(ContractConstant.FILE_EXT)){
+                    try {
+                        map.put("haveJarFile",true);
+                        map.put("fileName",jarFileDir.getName());
+                        String  hexEncode=  ContractUtil.getContractCode(jarFileDir);
+                        map.put("codeHex",hexEncode);
+                    } catch (Exception e) {
+                        throw new NulsRuntimeException(RpcErrorCode.FILE_OPERATION_FAILD);
+                    }
+                }else{
+                    throw new NulsRuntimeException(RpcErrorCode.PARAMETER_ERROR,"filePath");
+                }
+            }
+        }
+        return map;
     }
 
     @Override
