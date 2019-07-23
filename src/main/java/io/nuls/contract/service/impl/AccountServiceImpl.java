@@ -180,8 +180,8 @@ public class AccountServiceImpl implements AccountService {
     public boolean validationPassword(int chainId, String address, String password) {
         byte[] addressBytes = AddressTool.getAddress(address);
         AccountPo accountPo=accountStorageService.getAccount(addressBytes);
-        boolean result=false;
-        if(accountPo!=null){
+        boolean result=true;
+        if(accountPo!=null&&accountPo.isEncrypted()){
             result =accountPo.validatePassword(password);
         }
         return result;
