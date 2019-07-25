@@ -1,5 +1,6 @@
 package io.nuls.contract.autoconfig;
 
+import io.nuls.contract.constant.ContractConstant;
 import io.nuls.core.log.Log;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,7 +62,7 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     public String getLogPath() {
         //若不peoperties文件不配置此参数，则设置缺省值
         if(logPath.equals("default")){
-            logPath= System.getProperty("user.home")+ File.separator+"logs";
+            logPath= System.getProperty("user.home")+File.separator+ ContractConstant.DATA_FILE_NAME+ File.separator+"logs";
         }
         return logPath;
     }
@@ -102,7 +103,7 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     public String getDataPath() {
         //若不peoperties文件不配置此参数，则设置缺省值
         if( dataPath.equals("default")){
-            dataPath= System.getProperty("user.home")+ File.separator+"data";
+            dataPath= System.getProperty("user.home")+File.separator+ ContractConstant.DATA_FILE_NAME+ File.separator+"data";
         }
         return dataPath;
     }
@@ -114,7 +115,7 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     public String getKeystorePath() {
         //若不peoperties文件不配置此参数，则设置缺省值
         if(keystorePath.equals("default")){
-            keystorePath= System.getProperty("user.home")+ File.separator+"keystore"+ File.separator+"backup";
+            keystorePath= System.getProperty("user.home")+File.separator+ ContractConstant.DATA_FILE_NAME+ File.separator+"keystore"+ File.separator+"backup";
         }
         return keystorePath;
     }
