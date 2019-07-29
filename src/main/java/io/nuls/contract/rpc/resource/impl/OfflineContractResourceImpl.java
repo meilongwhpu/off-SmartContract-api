@@ -343,10 +343,18 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
             throw new NulsRuntimeException(RpcErrorCode.ACCOUNT_NOT_EXIST);
         }
         //账户密码验证
-        boolean validate= accountService.validationPassword(chainId,sender,password);
+/*        boolean validate= accountService.validationPassword(chainId,sender,password);
         if(!validate){
             throw new NulsRuntimeException(RpcErrorCode.VALIADE_PW_ERROR);
+        }*/
+
+        if(account.isEncrypted()){
+            if(!account.validatePassword(password)){
+                throw new NulsRuntimeException(RpcErrorCode.VALIADE_PW_ERROR);
+            }
         }
+
+
         byte[] contractCodeBytes = HexUtil.decode(contractCode);
         String[] argTypes=null;
 
