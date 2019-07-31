@@ -2,6 +2,7 @@ package io.nuls.contract.autoconfig;
 
 import io.nuls.contract.constant.ContractConstant;
 import io.nuls.core.log.Log;
+import io.nuls.core.model.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -141,6 +142,9 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     }
 
     public String getDefaultJarFilePath() {
+        if(StringUtils.isBlank(defaultJarFilePath)){
+            defaultJarFilePath=System.getProperty("user.home")+File.separator+ContractConstant.PACKING_FILE_PATH;
+        }
         return defaultJarFilePath;
     }
 
