@@ -12,11 +12,8 @@ import java.io.File;
 @Component
 public class ApiModuleInfoConfig  implements InitializingBean {
 
-    @Value("${nuls.api.module.service.ip}")
-    private String apiModuleApi;
-
-    @Value("${nuls.api.module.service.port}")
-    private String apiModulePort;
+    @Value("${nuls.api.module.service.address}")
+    private String apiModuleAddress;
 
     @Value("${language}")
     private String language;
@@ -44,20 +41,19 @@ public class ApiModuleInfoConfig  implements InitializingBean {
 
     private String defaultJarFilePath;
 
-    public String getApiModuleApi() {
-        return apiModuleApi;
+    public  String  getApiModuleAddress() {
+        if(StringUtils.isNotBlank(this.apiModuleAddress) && !this.apiModuleAddress.toLowerCase().startsWith("http")){
+            this.apiModuleAddress = "http://" + this.apiModuleAddress;
+        }
+        return this.apiModuleAddress;
     }
 
-    public void setApiModuleApi(String apiModuleApi) {
-        this.apiModuleApi = apiModuleApi;
-    }
-
-    public String getApiModulePort() {
-        return apiModulePort;
-    }
-
-    public void setApiModulePort(String apiModulePort) {
-        this.apiModulePort = apiModulePort;
+    public void  setApiModuleAddress(String address){
+        if(StringUtils.isNotBlank(address) && !address.toLowerCase().startsWith("http")){
+            this.apiModuleAddress = "http://" + address;
+        }else{
+            this.apiModuleAddress =address;
+        }
     }
 
     public String getLogPath() {
@@ -78,11 +74,6 @@ public class ApiModuleInfoConfig  implements InitializingBean {
 
     public void setLogLevel(String logLevel) {
         this.logLevel = logLevel;
-    }
-
-    public  String  getApiModuleAddress() {
-        String url = "http://" + apiModuleApi + ":" + apiModulePort;
-        return url;
     }
 
     public String getChainId() {
