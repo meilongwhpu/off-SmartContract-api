@@ -93,10 +93,13 @@ public class WebViewBootstrap extends Application implements Runnable, ActionLis
         if (isMac()) {
             java.awt.Image dockIcon = new ImageIcon(getClass().getResource(APP_ICON)).getImage();
             try {
-                Class<?> cls = Class.forName("com.apple.eawt.Application");
-                Object application = cls.newInstance().getClass().getMethod("getApplication").invoke(null);
-                application.getClass().getMethod("setDockIconImage", java.awt.Image.class).invoke(application, dockIcon);
+                com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
+                application.setDockIconImage(dockIcon);
+                //Class<?> cls = Class.forName("com.apple.eawt.Application");
+                //Object application = cls.newInstance().getClass().getMethod("getApplication").invoke(null);
+                //application.getClass().getMethod("setDockIconImage", java.awt.Image.class).invoke(application, dockIcon);
             } catch (Exception e) {
+                e.printStackTrace();
             }
 
         } else {
