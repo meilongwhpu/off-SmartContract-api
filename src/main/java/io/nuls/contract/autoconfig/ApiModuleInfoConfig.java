@@ -15,6 +15,10 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     @Value("${nuls.api.module.service.address}")
     private String apiModuleAddress;
 
+    private String prevApiModuleAddress;
+
+    private boolean isCreateNewClient=false;
+
     @Value("${language}")
     private String language;
 
@@ -49,11 +53,25 @@ public class ApiModuleInfoConfig  implements InitializingBean {
     }
 
     public void  setApiModuleAddress(String address){
+        this.prevApiModuleAddress=apiModuleAddress;
+        this.isCreateNewClient=true;
         if(StringUtils.isNotBlank(address) && !address.toLowerCase().startsWith("http")){
             this.apiModuleAddress = "http://" + address;
         }else{
             this.apiModuleAddress =address;
         }
+    }
+
+    public String getPrevApiModuleAddress() {
+        return prevApiModuleAddress;
+    }
+
+    public boolean isCreateNewClient() {
+        return isCreateNewClient;
+    }
+
+    public void setCreateNewClient(boolean createNewClient) {
+        isCreateNewClient = createNewClient;
     }
 
     public String getLogPath() {
