@@ -16,6 +16,5 @@ public class ContractApplication {
         SpringApplication springApplication=new SpringApplication(ContractApplication.class);
         springApplication.addListeners(new ApplicationStartup(args));
         springApplication.run(args);
-
     }
 }
