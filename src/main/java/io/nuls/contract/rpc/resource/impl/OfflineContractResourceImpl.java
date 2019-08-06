@@ -77,17 +77,6 @@ public class OfflineContractResourceImpl implements OfflineContractResource {
     private ChainService chainService;
 
     @Override
-    public ChainInfo getChainInfo() {
-        try {
-            ChainInfo chainInfo=chainService.getChainInfo(null);
-            return chainInfo;
-        } catch (NulsException e) {
-            Log.error(e);
-            throw new NulsRuntimeException(e.getErrorCode());
-        }
-    }
-
-    @Override
     public Map setProperty(String property, String value) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("result",false);
