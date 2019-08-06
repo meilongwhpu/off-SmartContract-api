@@ -93,11 +93,9 @@ public class WebViewBootstrap extends Application implements Runnable, ActionLis
         if (isMac()) {
             java.awt.Image dockIcon = new ImageIcon(getClass().getResource(APP_ICON)).getImage();
             try {
-                com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
-                application.setDockIconImage(dockIcon);
-                //Class<?> cls = Class.forName("com.apple.eawt.Application");
-                //Object application = cls.newInstance().getClass().getMethod("getApplication").invoke(null);
-                //application.getClass().getMethod("setDockIconImage", java.awt.Image.class).invoke(application, dockIcon);
+                Class<?> cls = Class.forName("com.apple.eawt.Application");
+                Object application = cls.newInstance().getClass().getMethod("getApplication").invoke(null);
+                application.getClass().getMethod("setDockIconImage", java.awt.Image.class).invoke(application, dockIcon);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -161,7 +159,7 @@ public class WebViewBootstrap extends Application implements Runnable, ActionLis
         PopupMenu popupMenu = new PopupMenu(); //创建弹出菜单对象
 
         //创建弹出菜单中的显示主窗体项.
-        MenuItem itemShow = new MenuItem("Show Client");
+        MenuItem itemShow = new MenuItem("Show Smart-Contract Client");
         itemShow.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
